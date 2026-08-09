@@ -167,6 +167,23 @@
     margin-bottom:4px;
   }
   .wheel-status b{ color:var(--rose-500); }
+  .chance-badge{
+    margin-top:8px;
+    font-size:12px;
+    font-weight:700;
+    padding:4px 13px;
+    border-radius:999px;
+    display:inline-block;
+  }
+  .chance-badge.chance-low{ background:var(--cream-100); color:var(--ink-500); }
+  .chance-badge.chance-medium{ background:var(--sage-300); color:var(--plum-950); }
+  .chance-badge.chance-peak{ background:var(--rose-500); color:#fff; }
+  .day-phase-info{
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-500);
+    margin:2px 0 16px;
+  }
 
   .legend-row{
     display:flex;
@@ -203,6 +220,27 @@
   .log-today-btn:hover{background:var(--plum-800);}
   .log-today-btn:active{transform:scale(0.98);}
   .log-today-btn svg{width:17px;height:17px;}
+  .streak-note{
+    margin-top:12px;
+    font-size:12.5px;
+    color:var(--ink-500);
+  }
+  .tip-card{
+    padding:18px 20px;
+  }
+  .tip-label{
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.8px;
+    color:var(--rose-500);
+    margin-bottom:6px;
+  }
+  .tip-text{
+    font-size:13.5px;
+    line-height:1.5;
+    color:var(--ink-800);
+  }
 
   /* ---------- Section titles ---------- */
   .section-title{
@@ -278,6 +316,22 @@
     border-radius:50%;
     background:var(--mauve-400);
   }
+  .day-heart{
+    position:absolute;
+    top:2px; right:3px;
+    font-size:8px;
+    line-height:1;
+    color:var(--rose-500);
+  }
+  .day-star{
+    position:absolute;
+    top:2px; left:3px;
+    font-size:8px;
+    line-height:1;
+    color:var(--gold-400);
+  }
+  .day-cell.period .day-heart, .day-cell.ovulation .day-heart{ color:#fff; }
+  .day-cell.period .day-star, .day-cell.ovulation .day-star{ color:#fff; }
 
   /* ---------- Insights ---------- */
   .stat-row{
@@ -484,6 +538,7 @@
   .chip.flow-light.selected{background:var(--rose-300); border-color:var(--rose-300); color:var(--plum-950);}
   .chip.flow-medium.selected{background:var(--rose-500); border-color:var(--rose-500);}
   .chip.flow-heavy.selected{background:#9C3A50; border-color:#9C3A50;}
+  .chip.opk-peak.selected{background:var(--gold-400); border-color:var(--gold-400); color:var(--plum-950);}
   textarea{
     width:100%;
     border:1.5px solid var(--line);
@@ -582,6 +637,21 @@
     border-radius:12px;
     cursor:pointer;
   }
+
+  /* Print summary */
+  #printSummary{ display:none; }
+  #printSummary h1{ font-family:'Fraunces',serif; font-size:22px; margin-bottom:2px; }
+  #printSummary .print-sub{ font-size:12px; color:#555; margin-bottom:20px; }
+  #printSummary h2{ font-family:'Fraunces',serif; font-size:15px; margin:20px 0 8px; }
+  #printSummary table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  #printSummary th, #printSummary td{ text-align:left; padding:5px 8px; border-bottom:1px solid #ddd; }
+  #printSummary .print-stats{ display:flex; gap:24px; margin-bottom:6px; }
+  #printSummary .print-stat b{ display:block; font-size:18px; }
+  @media print{
+    body *{ visibility:hidden; }
+    #printSummary, #printSummary *{ visibility:visible; }
+    #printSummary{ display:block; position:absolute; top:0; left:0; width:100%; color:#000; background:#fff; }
+  }
 </style>
 </head>
 <body>
@@ -615,6 +685,7 @@
         </div>
         <div class="wheel-status" id="wheelStatus">—</div>
         <div class="wheel-phase" id="wheelPhase">—</div>
+        <div class="chance-badge" id="chanceBadge">—</div>
 
         <div class="legend-row">
           <div class="legend-item"><span class="legend-dot" style="background:var(--rose-500)"></span>Period</div>
@@ -622,12 +693,20 @@
           <div class="legend-item"><span class="legend-dot" style="background:var(--gold-400)"></span>Ovulation</div>
           <div class="legend-item"><span class="legend-dot" style="background:var(--mauve-400)"></span>Luteal</div>
           <div class="legend-item"><span class="legend-dot" style="background:none;border:2px solid var(--pms-400)"></span>PMS window</div>
+          <div class="legend-item"><span style="color:var(--rose-500);font-size:11px;">♥</span>Intimacy</div>
+          <div class="legend-item"><span style="color:var(--gold-400);font-size:11px;">★</span>Peak OPK</div>
         </div>
 
         <button class="log-today-btn" id="logTodayBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
           <span id="logTodayLabel">Log today</span>
         </button>
+        <div class="streak-note" id="streakNote"></div>
+      </div>
+
+      <div class="card tip-card" id="tipCard" style="display:none;">
+        <div class="tip-label" id="tipLabel"></div>
+        <div class="tip-text" id="tipText"></div>
       </div>
     </div>
 
@@ -667,8 +746,13 @@
       <div class="section-title">Most logged</div>
       <div class="card" id="freqCard"></div>
 
+      <div class="section-title">Your patterns by phase</div>
+      <div class="card" id="phasePatternsCard" style="display:none;"></div>
+
       <div class="card" id="bbtCard" style="display:none;"></div>
       <div class="card" id="weightCard" style="display:none;"></div>
+      <div class="card" id="sleepCard" style="display:none;"></div>
+      <div class="card" id="activityCard" style="display:none;"></div>
 
       <div class="foot-note">Predictions are estimates based on your own logged history, not medical advice.</div>
     </div>
@@ -699,6 +783,7 @@
     <div class="sheet-handle"></div>
     <div class="sheet-title" id="sheetTitle">Today</div>
     <div class="sheet-sub" id="sheetSub"></div>
+    <div class="day-phase-info" id="dayPhaseInfo" style="display:none;"></div>
 
     <div class="toggle-row">
       <span>Period day</span>
@@ -723,6 +808,8 @@
       <button class="chip" data-mood="Irritable">Irritable</button>
       <button class="chip" data-mood="Anxious">Anxious</button>
       <button class="chip" data-mood="Sad">Sad</button>
+      <button class="chip" data-mood="High sex drive">High sex drive</button>
+      <button class="chip" data-mood="Low sex drive">Low sex drive</button>
     </div>
 
     <div class="field-label">Symptoms</div>
@@ -735,6 +822,23 @@
       <button class="chip" data-symptom="Nausea">Nausea</button>
       <button class="chip" data-symptom="Acne">Acne</button>
       <button class="chip" data-symptom="Cravings">Cravings</button>
+    </div>
+
+    <div class="field-label">Discharge</div>
+    <div class="chip-group" id="dischargeChips">
+      <button class="chip" data-discharge="Dry">Dry</button>
+      <button class="chip" data-discharge="Sticky">Sticky</button>
+      <button class="chip" data-discharge="Creamy">Creamy</button>
+      <button class="chip" data-discharge="Watery">Watery</button>
+      <button class="chip" data-discharge="Egg white">Egg white</button>
+      <button class="chip" data-discharge="Spotting">Spotting</button>
+    </div>
+
+    <div class="field-label">Ovulation test</div>
+    <div class="chip-group" id="opkChips">
+      <button class="chip" data-opk="Negative">Negative</button>
+      <button class="chip" data-opk="High">High</button>
+      <button class="chip opk-peak" data-opk="Peak">Peak</button>
     </div>
 
     <div class="toggle-row" style="margin-top:18px;">
@@ -759,6 +863,25 @@
         <label class="mini-label" for="weightInput">Weight (kg)</label>
         <input type="number" id="weightInput" step="0.1" min="20" max="250" placeholder="—">
       </div>
+    </div>
+    <div class="two-col" style="margin-top:10px;">
+      <div>
+        <label class="mini-label" for="sleepInput">Sleep (hrs)</label>
+        <input type="number" id="sleepInput" step="0.5" min="0" max="16" placeholder="—">
+      </div>
+      <div>
+        <label class="mini-label" for="waterInput">Water (glasses)</label>
+        <input type="number" id="waterInput" step="1" min="0" max="20" placeholder="—">
+      </div>
+    </div>
+
+    <div class="field-label">Exercise</div>
+    <div class="chip-group" id="exerciseChips">
+      <button class="chip" data-exercise="Cardio">Cardio</button>
+      <button class="chip" data-exercise="Strength">Strength</button>
+      <button class="chip" data-exercise="Yoga">Yoga</button>
+      <button class="chip" data-exercise="Walking">Walking</button>
+      <button class="chip" data-exercise="Rest day">Rest day</button>
     </div>
 
     <div class="field-label">Notes</div>
@@ -828,6 +951,12 @@
     <div class="settings-section-note">Everything's saved to your Google Sheet, so it's already safe across devices. Export gives you a local copy too; import replaces your sheet's data with a backup file.</div>
     <input type="file" id="importFileInput" accept="application/json" style="display:none;">
 
+    <div class="field-label">For your doctor</div>
+    <div class="settings-row">
+      <button class="btn btn-ghost" id="printBtn" style="flex:1;">Print summary</button>
+    </div>
+    <div class="settings-section-note">Opens a clean, printable page with your cycle history and averages — use your phone's Print option and choose "Save to Files" or "Save as PDF" to bring to an appointment.</div>
+
     <button class="btn-danger-text" id="openResetBtn">Reset all data</button>
 
     <div class="sheet-actions">
@@ -848,6 +977,8 @@
     </div>
   </div>
 </div>
+
+<div id="printSummary"></div>
 
 <script>
 (function(){
@@ -884,7 +1015,7 @@
   /* ---------------- backend (Google Sheets via Apps Script) ----------------
      Paste your deployed web app URL below. See bloom-backend.gs for the
      matching Apps Script code and deployment steps. */
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwnGCeqH2GGuAzjUCQwRd2p5AxV1Qk2SIk-_pmaOCvuz48zC6QTO6UDaxD_muFAuxohmA/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWUwMDVu4Ceqvfj-jhAYeQyKGG7lwnRtfjWp4DEw4wChQ36sSSuwfQt1daj3QrtODEvA/exec';
 
   async function apiLoad(){
     const res = await fetch(SCRIPT_URL, { method:'GET' });
@@ -974,14 +1105,45 @@
     };
   }
 
-  function phaseAt(dayIndex, c){
-    if(dayIndex <= c.avgPeriodLength) return 'period';
-    if(dayIndex < c.fertileStart) return 'follicular';
-    if(dayIndex < c.ovulationIndex) return 'fertile';
-    if(dayIndex === c.ovulationIndex) return 'ovulation';
-    if(dayIndex <= c.fertileEnd) return 'fertile';
+  function phaseBoundariesForLength(cycleLen, periodLen){
+    let ovulationIndex = cycleLen - 13;
+    ovulationIndex = Math.min(cycleLen - 2, Math.max(periodLen + 1, ovulationIndex));
+    const fertileStart = Math.max(1, ovulationIndex - 5);
+    const fertileEnd = Math.min(cycleLen, ovulationIndex + 1);
+    return { fertileStart, ovulationIndex, fertileEnd };
+  }
+  function phaseForDay(dayIndex, periodLen, b){
+    if(dayIndex <= periodLen) return 'period';
+    if(dayIndex < b.fertileStart) return 'follicular';
+    if(dayIndex < b.ovulationIndex) return 'fertile';
+    if(dayIndex === b.ovulationIndex) return 'ovulation';
+    if(dayIndex <= b.fertileEnd) return 'fertile';
     return 'luteal';
   }
+  function phaseAt(dayIndex, c){
+    return phaseForDay(dayIndex, c.avgPeriodLength, { fertileStart:c.fertileStart, ovulationIndex:c.ovulationIndex, fertileEnd:c.fertileEnd });
+  }
+  /* Classifies any date (past or near-future) into a phase, anchored to whichever
+     logged period run precedes it — used for per-day predictions and for looking
+     at her own historical symptom patterns by phase. Returns null if the date is
+     before any logged period (nothing to anchor it to). */
+  function phaseForDate(dateObj){
+    const runs = getPeriodRuns();
+    if(!runs.length) return null;
+    let anchor = null, next = null;
+    for(let i=0;i<runs.length;i++){
+      if(runs[i].startDate <= dateObj){ anchor = runs[i]; next = runs[i+1] || null; }
+    }
+    if(!anchor) return null;
+    if(dateObj >= anchor.startDate && dateObj <= anchor.endDate) return 'period';
+    const c = computeCycle();
+    const dayIndex = daysBetween(anchor.startDate, dateObj) + 1;
+    const cycleLen = next ? daysBetween(anchor.startDate, next.startDate) : c.avgCycleLength;
+    const b = phaseBoundariesForLength(cycleLen, c.avgPeriodLength);
+    return phaseForDay(dayIndex, c.avgPeriodLength, b);
+  }
+  const CHANCE_BY_PHASE = { period:'Low', follicular:'Low', fertile:'Medium', ovulation:'Peak', luteal:'Low' };
+  const CHANCE_CLASS = { Low:'chance-low', Medium:'chance-medium', Peak:'chance-peak' };
   const PHASE_NAME = {
     period:'Menstrual phase', follicular:'Follicular phase',
     fertile:'Fertile window', ovulation:'Ovulation day', luteal:'Luteal phase'
@@ -1023,6 +1185,10 @@
     document.getElementById('wheelDayNum').textContent = dayNum;
     document.getElementById('wheelDayLabel').textContent = dayLabel;
     document.getElementById('wheelPhase').textContent = PHASE_NAME[phase];
+    const chance = CHANCE_BY_PHASE[phase] || 'Low';
+    const chanceEl = document.getElementById('chanceBadge');
+    chanceEl.textContent = `Pregnancy chance: ${chance}`;
+    chanceEl.className = 'chance-badge ' + (CHANCE_CLASS[chance] || 'chance-low');
 
     let status;
     if(c.inCurrentPeriod){
@@ -1112,6 +1278,20 @@
         btn.appendChild(dot);
       }
 
+      if(entry && entry.intimacy){
+        const heart = document.createElement('span');
+        heart.className = 'day-heart';
+        heart.textContent = '♥';
+        btn.appendChild(heart);
+      }
+
+      if(entry && entry.opk === 'Peak'){
+        const star = document.createElement('span');
+        star.className = 'day-star';
+        star.textContent = '★';
+        btn.appendChild(star);
+      }
+
       btn.addEventListener('click', () => openDayEditor(ds));
       grid.appendChild(btn);
     }
@@ -1191,6 +1371,32 @@
         </div>`).join('');
     }
 
+    const phaseBuckets = { period:{}, follicular:{}, fertile:{}, ovulation:{}, luteal:{} };
+    Object.keys(state.logs).forEach(ds => {
+      const phase = phaseForDate(fromStr(ds));
+      if(!phase) return;
+      const e = state.logs[ds];
+      (e.mood||[]).forEach(m => phaseBuckets[phase][m] = (phaseBuckets[phase][m]||0)+1);
+      (e.symptoms||[]).forEach(s => phaseBuckets[phase][s] = (phaseBuckets[phase][s]||0)+1);
+    });
+    const phaseRows = ['period','follicular','fertile','ovulation','luteal'].map(p => {
+      const top = Object.entries(phaseBuckets[p]).sort((a,b)=>b[1]-a[1]).slice(0,3);
+      if(!top.length) return null;
+      return `<div class="history-item">
+        <div>
+          <div class="history-date">${PHASE_NAME[p]}</div>
+          <div class="history-sub">${top.map(([k,v])=>`${k} (${v}×)`).join(', ')}</div>
+        </div>
+      </div>`;
+    }).filter(Boolean);
+    const phasePatternsCard = document.getElementById('phasePatternsCard');
+    if(phaseRows.length){
+      phasePatternsCard.style.display = 'block';
+      phasePatternsCard.innerHTML = phaseRows.join('');
+    } else {
+      phasePatternsCard.style.display = 'none';
+    }
+
     const bbtEntries = Object.keys(state.logs).sort()
       .map(d => ({ d, v: state.logs[d].bbt }))
       .filter(e => e.v !== null && e.v !== undefined)
@@ -1218,6 +1424,86 @@
     } else {
       weightCard.style.display = 'none';
     }
+
+    const sleepEntries = Object.keys(state.logs).sort()
+      .map(d => ({ d, v: state.logs[d].sleep }))
+      .filter(e => e.v !== null && e.v !== undefined)
+      .slice(-30);
+    const sleepCard = document.getElementById('sleepCard');
+    if(sleepEntries.length >= 2){
+      sleepCard.style.display = 'block';
+      const chart = lineChartSVG(sleepEntries.map(e=>e.v), { color:'#7E9473' });
+      const avg = (sleepEntries.reduce((a,e)=>a+e.v,0) / sleepEntries.length).toFixed(1);
+      sleepCard.innerHTML = `<div class="section-title" style="color:var(--ink-800);margin:0 0 8px;font-size:15px;">Sleep</div>${chart}<div class="chart-caption">Averaging ${avg} hours over your last ${sleepEntries.length} logged nights.</div>`;
+    } else {
+      sleepCard.style.display = 'none';
+    }
+
+    const waterEntries = Object.values(state.logs).map(e=>e.water).filter(v => v !== null && v !== undefined);
+    const exerciseCounts = {};
+    Object.values(state.logs).forEach(e => (e.exercise||[]).forEach(x => exerciseCounts[x] = (exerciseCounts[x]||0)+1));
+    const exerciseList = Object.entries(exerciseCounts).sort((a,b)=>b[1]-a[1]);
+    const activityCard = document.getElementById('activityCard');
+    if(waterEntries.length || exerciseList.length){
+      activityCard.style.display = 'block';
+      const waterLine = waterEntries.length
+        ? `Averaging ${(waterEntries.reduce((a,v)=>a+v,0)/waterEntries.length).toFixed(1)} glasses of water on days you've logged it.`
+        : '';
+      const exLine = exerciseList.length
+        ? `Most logged: ${exerciseList.slice(0,3).map(([k,v])=>`${k} (${v}×)`).join(', ')}.`
+        : '';
+      activityCard.innerHTML = `<div class="section-title" style="color:var(--ink-800);margin:0 0 8px;font-size:15px;">Activity</div><div class="regularity-note">${[waterLine, exLine].filter(Boolean).join('<br>')}</div>`;
+    } else {
+      activityCard.style.display = 'none';
+    }
+  }
+
+  /* ---------------- streak + daily tip ---------------- */
+  function renderStreak(){
+    let streak = 0;
+    let d = startOfDay(new Date());
+    while(state.logs[toStr(d)]){
+      streak++;
+      d = addDays(d, -1);
+    }
+    const note = document.getElementById('streakNote');
+    note.textContent = streak >= 2 ? `${streak}-day logging streak` : '';
+  }
+
+  const PHASE_TIPS = {
+    period: [
+      "Iron-rich foods like leafy greens or red meat can help offset what's lost during your period.",
+      "Gentle movement — a short walk or light stretching — can ease cramping for some people more than resting still.",
+      "A hot water bottle on the lower abdomen or back is a simple, low-effort way to take the edge off cramps."
+    ],
+    follicular: [
+      "Energy levels often start climbing through this phase — a good window for trying a new workout or project.",
+      "This is typically when cervical mucus starts shifting from sticky to creamy as your body approaches ovulation."
+    ],
+    fertile: [
+      "This is your fertile window — cervical mucus is often at its most slippery and stretchy around now.",
+      "If you're tracking with OPKs, this is the window they're most likely to pick up a surge."
+    ],
+    ovulation: [
+      "Basal body temperature often ticks up slightly the day or two after ovulation — worth a look if you're logging it.",
+      "Some people notice a one-sided twinge around ovulation, sometimes called mittelschmerz."
+    ],
+    luteal: [
+      "Progesterone rises after ovulation, which is part of why energy can dip a little in this phase for some people.",
+      "Cravings can pick up in the back half of this phase — planning a satisfying snack ahead of time can help."
+    ]
+  };
+  function renderTip(c){
+    const phase = c.inCurrentPeriod ? 'period'
+      : c.isOvulationDay ? 'ovulation'
+      : c.inFertileWindow ? 'fertile'
+      : phaseAt(Math.min(c.avgCycleLength, Math.max(1,c.cycleDayIndex)), c);
+    const tips = PHASE_TIPS[phase] || PHASE_TIPS.follicular;
+    const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+    const tip = tips[dayOfYear % tips.length];
+    document.getElementById('tipLabel').textContent = PHASE_NAME[phase] || 'Today';
+    document.getElementById('tipText').textContent = tip;
+    document.getElementById('tipCard').style.display = 'block';
   }
 
   function renderAll(){
@@ -1225,6 +1511,8 @@
     renderWheel(c);
     renderCalendar(c);
     renderInsights(c);
+    renderStreak();
+    renderTip(c);
   }
 
   /* ---------------- tabs ---------------- */
@@ -1259,18 +1547,32 @@
     document.getElementById('sheetTitle').textContent = ds === todayStr() ? 'Today' : fmtLong(d);
     document.getElementById('sheetSub').textContent = fmtShort(d);
 
-    const entry = state.logs[ds] || { period:false, flow:null, mood:[], symptoms:[], intimacy:null, bbt:null, weight:null, notes:'' };
+    const phaseInfo = document.getElementById('dayPhaseInfo');
+    const datePhase = phaseForDate(d);
+    if(datePhase){
+      phaseInfo.style.display = 'block';
+      phaseInfo.textContent = `${PHASE_NAME[datePhase]} · Pregnancy chance: ${CHANCE_BY_PHASE[datePhase] || 'Low'}`;
+    } else {
+      phaseInfo.style.display = 'none';
+    }
+
+    const entry = state.logs[ds] || { period:false, flow:null, mood:[], symptoms:[], discharge:null, opk:null, intimacy:null, bbt:null, weight:null, sleep:null, water:null, exercise:[], notes:'' };
 
     periodSwitch.classList.toggle('on', !!entry.period);
     flowSection.style.display = entry.period ? 'block' : 'none';
     document.querySelectorAll('[data-flow]').forEach(c => c.classList.toggle('selected', c.getAttribute('data-flow')===entry.flow));
     document.querySelectorAll('[data-mood]').forEach(c => c.classList.toggle('selected', (entry.mood||[]).includes(c.getAttribute('data-mood'))));
     document.querySelectorAll('[data-symptom]').forEach(c => c.classList.toggle('selected', (entry.symptoms||[]).includes(c.getAttribute('data-symptom'))));
+    document.querySelectorAll('[data-discharge]').forEach(c => c.classList.toggle('selected', c.getAttribute('data-discharge')===entry.discharge));
+    document.querySelectorAll('[data-opk]').forEach(c => c.classList.toggle('selected', c.getAttribute('data-opk')===entry.opk));
     intimacySwitch.classList.toggle('on', !!entry.intimacy);
     intimacySection.style.display = entry.intimacy ? 'block' : 'none';
     document.querySelectorAll('[data-intimacy]').forEach(c => c.classList.toggle('selected', c.getAttribute('data-intimacy')===entry.intimacy));
     document.getElementById('bbtInput').value = entry.bbt !== null && entry.bbt !== undefined ? entry.bbt : '';
     document.getElementById('weightInput').value = entry.weight !== null && entry.weight !== undefined ? entry.weight : '';
+    document.getElementById('sleepInput').value = entry.sleep !== null && entry.sleep !== undefined ? entry.sleep : '';
+    document.getElementById('waterInput').value = entry.water !== null && entry.water !== undefined ? entry.water : '';
+    document.querySelectorAll('[data-exercise]').forEach(c => c.classList.toggle('selected', (entry.exercise||[]).includes(c.getAttribute('data-exercise'))));
     document.getElementById('notesInput').value = entry.notes || '';
 
     document.getElementById('deleteDayBtn').style.display = state.logs[ds] ? 'block' : 'none';
@@ -1294,6 +1596,26 @@
       document.querySelectorAll('[data-flow]').forEach(c => c.classList.remove('selected'));
       chip.classList.add('selected');
     });
+  });
+
+  document.querySelectorAll('[data-discharge]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const alreadySelected = chip.classList.contains('selected');
+      document.querySelectorAll('[data-discharge]').forEach(c => c.classList.remove('selected'));
+      if(!alreadySelected) chip.classList.add('selected');
+    });
+  });
+
+  document.querySelectorAll('[data-opk]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const alreadySelected = chip.classList.contains('selected');
+      document.querySelectorAll('[data-opk]').forEach(c => c.classList.remove('selected'));
+      if(!alreadySelected) chip.classList.add('selected');
+    });
+  });
+
+  document.querySelectorAll('[data-exercise]').forEach(chip => {
+    chip.addEventListener('click', () => chip.classList.toggle('selected'));
   });
 
   intimacySwitch.addEventListener('click', () => {
@@ -1323,20 +1645,30 @@
     const flowChip = document.querySelector('[data-flow].selected');
     const mood = [...document.querySelectorAll('[data-mood].selected')].map(c=>c.getAttribute('data-mood'));
     const symptoms = [...document.querySelectorAll('[data-symptom].selected')].map(c=>c.getAttribute('data-symptom'));
+    const dischargeChip = document.querySelector('[data-discharge].selected');
+    const discharge = dischargeChip ? dischargeChip.getAttribute('data-discharge') : null;
+    const opkChip = document.querySelector('[data-opk].selected');
+    const opk = opkChip ? opkChip.getAttribute('data-opk') : null;
     const intimacyOn = intimacySwitch.classList.contains('on');
     const intimacyChip = document.querySelector('[data-intimacy].selected');
     const bbtRaw = document.getElementById('bbtInput').value;
     const weightRaw = document.getElementById('weightInput').value;
+    const sleepRaw = document.getElementById('sleepInput').value;
+    const waterRaw = document.getElementById('waterInput').value;
     const bbt = bbtRaw === '' ? null : Math.min(42, Math.max(34, parseFloat(bbtRaw)));
     const weight = weightRaw === '' ? null : Math.min(250, Math.max(20, parseFloat(weightRaw)));
+    const sleep = sleepRaw === '' ? null : Math.min(16, Math.max(0, parseFloat(sleepRaw)));
+    const water = waterRaw === '' ? null : Math.min(20, Math.max(0, parseInt(waterRaw,10)));
+    const exercise = [...document.querySelectorAll('[data-exercise].selected')].map(c=>c.getAttribute('data-exercise'));
     const notes = document.getElementById('notesInput').value.trim();
 
-    const isEmpty = !period && mood.length===0 && symptoms.length===0 && !intimacyOn && bbt===null && weight===null && !notes;
+    const isEmpty = !period && mood.length===0 && symptoms.length===0 && !discharge && !opk && !intimacyOn
+      && bbt===null && weight===null && sleep===null && water===null && exercise.length===0 && !notes;
     const entry = isEmpty ? null : {
       period, flow: period ? (flowChip ? flowChip.getAttribute('data-flow') : 'Medium') : null,
-      mood, symptoms,
+      mood, symptoms, discharge, opk,
       intimacy: intimacyOn ? (intimacyChip ? intimacyChip.getAttribute('data-intimacy') : 'Protected') : null,
-      bbt, weight,
+      bbt, weight, sleep, water, exercise,
       notes
     };
 
@@ -1382,7 +1714,7 @@
     let d = fromStr(lastPeriod);
     const end = fromStr(lastPeriodEnd);
     while(d <= end){
-      logs[toStr(d)] = { period:true, flow:'Medium', mood:[], symptoms:[], intimacy:null, bbt:null, weight:null, notes:'' };
+      logs[toStr(d)] = { period:true, flow:'Medium', mood:[], symptoms:[], discharge:null, opk:null, intimacy:null, bbt:null, weight:null, sleep:null, water:null, exercise:[], notes:'' };
       d = addDays(d, 1);
     }
 
@@ -1469,6 +1801,38 @@
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('printBtn').addEventListener('click', () => {
+    const c = computeCycle();
+    const runsHtml = c.runs.length
+      ? [...c.runs].reverse().map((r,idx) => {
+          const realIdx = c.runs.length - idx - 1;
+          const len = realIdx > 0 ? `${daysBetween(c.runs[realIdx-1].startDate, r.startDate)} days` : '—';
+          const periodLen = daysBetween(r.startDate, r.endDate) + 1;
+          return `<tr><td>${fmtShort(r.startDate)}</td><td>${periodLen} days</td><td>${len}</td></tr>`;
+        }).join('')
+      : '<tr><td colspan="3">No cycles logged yet.</td></tr>';
+
+    const symptomCounts = {};
+    Object.values(state.logs).forEach(e => (e.symptoms||[]).forEach(s => symptomCounts[s]=(symptomCounts[s]||0)+1));
+    const topSymptoms = Object.entries(symptomCounts).sort((a,b)=>b[1]-a[1]).slice(0,6)
+      .map(([k,v])=>`${k} (${v}×)`).join(', ') || 'None logged.';
+
+    document.getElementById('printSummary').innerHTML = `
+      <h1>Bloom — Cycle Summary</h1>
+      <div class="print-sub">Generated ${fmtShort(new Date())}</div>
+      <div class="print-stats">
+        <div class="print-stat"><b>${c.runs.length ? c.avgCycleLength : '—'}</b>avg cycle (days)</div>
+        <div class="print-stat"><b>${c.runs.length ? c.avgPeriodLength : '—'}</b>avg period (days)</div>
+        <div class="print-stat"><b>${c.runs.length}</b>cycles logged</div>
+      </div>
+      <h2>Cycle history</h2>
+      <table><thead><tr><th>Period started</th><th>Period length</th><th>Cycle length</th></tr></thead><tbody>${runsHtml}</tbody></table>
+      <h2>Most logged symptoms</h2>
+      <div>${topSymptoms}</div>
+    `;
+    window.print();
   });
 
   document.getElementById('exportBtn').addEventListener('click', () => {
