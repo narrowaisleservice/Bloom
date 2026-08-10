@@ -498,51 +498,87 @@
     line-height:1.5;
     margin-top:6px;
   }
-  .assist-q-chip{
+  .assist-thread{
+    max-height:340px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding:4px 2px 10px;
+    margin-bottom:12px;
+  }
+  .assist-msg{
+    max-width:82%;
+    padding:11px 14px;
+    border-radius:16px;
+    font-size:13.5px;
+    line-height:1.5;
+    animation: fadeUp .25s ease both;
+  }
+  .assist-msg b{ color:inherit; }
+  .assist-msg-bot{
+    align-self:flex-start;
+    background:var(--cream-100);
+    color:var(--ink-800);
+    border-bottom-left-radius:5px;
+  }
+  .assist-msg-bot b{ color:var(--rose-500); }
+  .assist-msg-user{
+    align-self:flex-end;
+    background:var(--grad-hero);
+    color:#fff;
+    border-bottom-right-radius:5px;
+  }
+  .assist-suggestions{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:4px;
+    margin-bottom:12px;
+    scrollbar-width:none;
+  }
+  .assist-suggestions::-webkit-scrollbar{ display:none; }
+  .assist-suggest-chip{
+    flex-shrink:0;
     border:1.5px solid var(--line);
     background:#fff;
-    padding:10px 14px;
-    border-radius:14px;
-    font-size:13.5px;
+    padding:8px 13px;
+    border-radius:999px;
+    font-size:12.5px;
     font-weight:500;
     color:var(--ink-800);
     cursor:pointer;
-    text-align:left;
-    width:100%;
-    margin-bottom:8px;
-    display:block;
+    white-space:nowrap;
     transition:all .12s ease;
   }
-  .assist-q-chip:hover{ border-color:var(--rose-300); background:var(--cream-100); }
-  .assist-answer{
-    background:var(--cream-100);
-    border-radius:16px;
-    padding:16px;
+  .assist-suggest-chip:hover{ border-color:var(--rose-300); background:var(--cream-100); }
+  .assist-input-row{
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+  .assist-input-row input{
+    flex:1;
+    border:1.5px solid var(--line);
+    border-radius:14px;
+    padding:12px 14px;
     font-size:14px;
-    line-height:1.55;
+    font-family:'Inter',sans-serif;
     color:var(--ink-800);
-    margin-top:4px;
-    margin-bottom:18px;
-    display:none;
+    background:#fff;
   }
-  .assist-answer.active{ display:block; animation: fadeUp .3s ease both; }
-  .assist-answer b{ color:var(--rose-500); }
-  .checker-result{
-    background:var(--cream-100);
-    border-radius:16px;
-    padding:16px;
-    margin-top:12px;
-    display:none;
-  }
-  .checker-result.active{ display:block; animation: fadeUp .3s ease both; }
-  .checker-result-title{ font-weight:700; font-size:14.5px; margin-bottom:6px; color:var(--plum-950); }
-  .checker-result-personal{ font-size:13px; color:var(--rose-500); font-weight:600; margin-bottom:8px; }
-  .checker-result-body{ font-size:13.5px; line-height:1.55; color:var(--ink-800); }
-  .assist-divider{
+  .assist-input-row input:focus{ outline:2px solid var(--gold-400); outline-offset:1px; }
+  .assist-send-btn{
+    flex-shrink:0;
+    width:42px;height:42px;
     border:none;
-    border-top:1px solid var(--line);
-    margin:22px 0 18px;
+    border-radius:50%;
+    background:var(--grad-btn);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
   }
+  .assist-send-btn svg{ width:19px;height:19px; }
 
   /* ---------- Bottom nav ---------- */
   .bottom-nav{
@@ -1105,36 +1141,18 @@
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title">Bloom Assistant</div>
-    <div class="sheet-sub">Quick answers from your own logged data, plus a checker for what you're feeling.</div>
+    <div class="sheet-sub">Ask anything about your cycle or a symptom — answers come from your own logged data.</div>
 
-    <div class="field-label">Ask something quick</div>
-    <button class="assist-q-chip" data-q="next">When's my next period?</button>
-    <button class="assist-q-chip" data-q="fertile">Am I fertile today?</button>
-    <button class="assist-q-chip" data-q="phase">What phase am I in?</button>
-    <button class="assist-q-chip" data-q="ovulation">How many days until ovulation?</button>
-    <button class="assist-q-chip" data-q="summary">How has this cycle been so far?</button>
-    <div class="assist-answer" id="assistAnswer"></div>
+    <div class="assist-thread" id="assistThread"></div>
+    <div class="assist-suggestions" id="assistSuggestions"></div>
 
-    <hr class="assist-divider">
-
-    <div class="field-label">Symptom checker</div>
-    <div class="sheet-sub" style="margin-bottom:12px;">Tap what you're noticing.</div>
-    <div class="chip-group" id="checkerChips">
-      <button class="chip" data-check="Cramps">Cramps</button>
-      <button class="chip" data-check="Headache">Headache</button>
-      <button class="chip" data-check="Bloating">Bloating</button>
-      <button class="chip" data-check="Tender breasts">Tender breasts</button>
-      <button class="chip" data-check="Backache">Backache</button>
-      <button class="chip" data-check="Nausea">Nausea</button>
-      <button class="chip" data-check="Acne">Acne</button>
-      <button class="chip" data-check="Cravings">Cravings</button>
-      <button class="chip" data-check="Tired">Tired</button>
-      <button class="chip" data-check="Irritable">Irritable</button>
-      <button class="chip" data-check="Anxious">Anxious</button>
-      <button class="chip" data-check="Sad">Sad</button>
+    <div class="assist-input-row">
+      <input type="text" id="assistInput" placeholder="Ask Bloom something…" autocomplete="off">
+      <button class="assist-send-btn" id="assistSendBtn" aria-label="Send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
     </div>
-    <div class="checker-result" id="checkerResult"></div>
-    <div class="settings-section-note" style="margin-top:14px;">General information only, based on typical cycle patterns and your own logged history — not a diagnosis. Talk to a doctor about anything severe, sudden, or out of the ordinary for you.</div>
+    <div class="settings-section-note" style="margin-top:10px;">General information only, based on typical cycle patterns and your own logged history — not a diagnosis. Talk to a doctor about anything severe, sudden, or out of the ordinary for you.</div>
 
     <div class="sheet-actions">
       <button class="btn btn-ghost" id="assistantCloseBtn" style="flex:1;">Close</button>
@@ -2056,88 +2074,171 @@
     }
   });
 
-  /* ---------------- bloom assistant: quick questions + symptom checker ---------------- */
+  /* ---------------- bloom assistant: conversational chat ---------------- */
   const assistantOverlay = document.getElementById('assistantOverlay');
-  document.getElementById('assistantBtn').addEventListener('click', () => {
-    assistantOverlay.classList.add('active');
-  });
-  document.getElementById('assistantCloseBtn').addEventListener('click', () => assistantOverlay.classList.remove('active'));
-
-  document.querySelectorAll('.assist-q-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const c = computeCycle();
-      const q = chip.getAttribute('data-q');
-      let answer = '';
-      if(!c.runs.length){
-        answer = "Log your first period and I'll be able to answer this properly — for now everything's running on your default settings.";
-      } else if(q === 'next'){
-        answer = `Your next period is predicted for <b>${fmtLong(c.predictedNextStart)}</b>, ${c.daysUntilNext >= 0 ? `${c.daysUntilNext} day${c.daysUntilNext===1?'':'s'} away` : `${Math.abs(c.daysUntilNext)} day${Math.abs(c.daysUntilNext)===1?'':'s'} overdue`}${c.runs.length>=2 ? ` (typically ±${c.predictionWindow} days)` : ''}.`;
-      } else if(q === 'fertile'){
-        answer = c.inFertileWindow
-          ? `Yes — today falls inside your predicted <b>fertile window</b> (${fmtLong(c.fertileStartDate)} to ${fmtLong(c.fertileEndDate)}).`
-          : `Not currently — your predicted fertile window is <b>${fmtLong(c.fertileStartDate)} to ${fmtLong(c.fertileEndDate)}</b>.`;
-      } else if(q === 'phase'){
-        const phase = c.inCurrentPeriod ? 'period' : phaseAt(Math.min(c.avgCycleLength, Math.max(1,c.cycleDayIndex)), c);
-        answer = `You're in your <b>${PHASE_NAME[phase]}</b> — cycle day ${c.inCurrentPeriod ? daysBetween(c.lastRun.startDate, new Date())+1 : c.cycleDayIndex} of an average ${c.avgCycleLength}-day cycle.`;
-      } else if(q === 'ovulation'){
-        const days = daysBetween(startOfDay(new Date()), c.predictedOvulationDate);
-        answer = days === 0 ? `Today is your predicted <b>ovulation day</b>.`
-          : days > 0 ? `Predicted ovulation is in <b>${days} day${days===1?'':'s'}</b>, on ${fmtLong(c.predictedOvulationDate)}.`
-          : `Predicted ovulation was <b>${Math.abs(days)} day${Math.abs(days)===1?'':'s'} ago</b>, on ${fmtLong(c.predictedOvulationDate)}.`;
-      } else if(q === 'summary'){
-        const daysSinceStart = daysBetween(c.lastStart, startOfDay(new Date())) + 1;
-        const loggedDays = Object.keys(state.logs).filter(d => fromStr(d) >= c.lastStart).length;
-        answer = `You're on day ${daysSinceStart} of this cycle, with <b>${loggedDays} day${loggedDays===1?'':'s'}</b> logged so far. ${c.confidence === 'high' ? "Your cycles have been pretty consistent lately." : c.confidence === 'medium' ? "You're building up a solid pattern." : "Still early days for spotting a pattern — keep logging."}`;
-      }
-      const el = document.getElementById('assistAnswer');
-      el.innerHTML = answer;
-      el.classList.add('active');
-    });
-  });
+  const assistThread = document.getElementById('assistThread');
+  const assistInput = document.getElementById('assistInput');
 
   const SYMPTOM_INFO = {
-    'Cramps': "Common during your period as the uterus contracts to shed its lining, and can start a day or two before bleeding begins. Heat, gentle movement and staying hydrated often help; mention it to a doctor if it's severe or stops you doing normal activities.",
-    'Headache': "Often linked to the hormone drop just before or during your period. Staying hydrated, regular sleep and reducing caffeine swings can help; frequent or severe headaches are worth checking with a doctor.",
-    'Bloating': "Common in the days before your period due to hormonal fluid retention. Reducing salty food, staying hydrated and gentle movement can ease it.",
-    'Tender breasts': "Common in the luteal phase (the back half of your cycle) as progesterone rises. A supportive bra and cutting back on caffeine sometimes helps.",
-    'Backache': "Often accompanies period cramps as prostaglandins affect the lower abdomen and back. Gentle stretching, heat or light exercise can help.",
-    'Nausea': "Some people notice mild nausea around ovulation or just before their period due to hormone shifts. If it's persistent, severe, or new for you, worth checking with a doctor.",
-    'Acne': "Hormonal shifts in the luteal phase can trigger breakouts for some people, usually easing once the period starts.",
-    'Cravings': "Very common in the luteal phase — often linked to shifting hormones and blood sugar. Balanced meals with protein and fibre can help keep energy steadier.",
-    'Tired': "Energy often dips in the luteal phase and during your period as hormones shift. Prioritising sleep and, for some people, checking iron levels can help.",
-    'Irritable': "Mood changes are common in the luteal phase as hormones shift — often grouped under PMS. Sleep, movement and stress management can help; if it's severe or disrupting daily life, a doctor can talk through options.",
-    'Anxious': "Some people notice more anxiety in the luteal phase as progesterone and serotonin interact. Regular routines and movement can help; talk to a doctor if it feels disproportionate or persistent.",
-    'Sad': "Low mood in the days before a period is common and usually lifts once bleeding starts. If it's severe or lasts beyond your period, it's worth discussing with a doctor — including screening for PMDD."
+    'cramps': "Common during your period as the uterus contracts to shed its lining, and can start a day or two before bleeding begins. Heat, gentle movement and staying hydrated often help; mention it to a doctor if it's severe or stops you doing normal activities.",
+    'headache': "Often linked to the hormone drop just before or during your period. Staying hydrated, regular sleep and reducing caffeine swings can help; frequent or severe headaches are worth checking with a doctor.",
+    'bloating': "Common in the days before your period due to hormonal fluid retention. Reducing salty food, staying hydrated and gentle movement can ease it.",
+    'tender breasts': "Common in the luteal phase (the back half of your cycle) as progesterone rises. A supportive bra and cutting back on caffeine sometimes helps.",
+    'backache': "Often accompanies period cramps as prostaglandins affect the lower abdomen and back. Gentle stretching, heat or light exercise can help.",
+    'nausea': "Some people notice mild nausea around ovulation or just before their period due to hormone shifts. If it's persistent, severe, or new for you, worth checking with a doctor.",
+    'acne': "Hormonal shifts in the luteal phase can trigger breakouts for some people, usually easing once the period starts.",
+    'cravings': "Very common in the luteal phase — often linked to shifting hormones and blood sugar. Balanced meals with protein and fibre can help keep energy steadier.",
+    'tired': "Energy often dips in the luteal phase and during your period as hormones shift. Prioritising sleep and, for some people, checking iron levels can help.",
+    'irritable': "Mood changes are common in the luteal phase as hormones shift — often grouped under PMS. Sleep, movement and stress management can help; if it's severe or disrupting daily life, a doctor can talk through options.",
+    'anxious': "Some people notice more anxiety in the luteal phase as progesterone and serotonin interact. Regular routines and movement can help; talk to a doctor if it feels disproportionate or persistent.",
+    'sad': "Low mood in the days before a period is common and usually lifts once bleeding starts. If it's severe or lasts beyond your period, it's worth discussing with a doctor — including screening for PMDD."
   };
-  let checkerSelected = null;
-  document.querySelectorAll('[data-check]').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const item = chip.getAttribute('data-check');
-      checkerSelected = (checkerSelected === item) ? null : item;
-      document.querySelectorAll('[data-check]').forEach(c => c.classList.toggle('selected', c.getAttribute('data-check') === checkerSelected));
-      const resultEl = document.getElementById('checkerResult');
-      if(!checkerSelected){
-        resultEl.classList.remove('active');
-        return;
-      }
-      const { buckets, dayCounts } = computePhasePatterns();
-      let personalLine = '';
-      let bestPhase = null, bestCount = 0;
-      Object.keys(buckets).forEach(phase => {
-        const count = buckets[phase][checkerSelected] || 0;
-        if(count > bestCount){ bestCount = count; bestPhase = phase; }
-      });
-      if(bestPhase && bestCount >= 2){
-        const total = dayCounts[bestPhase] || bestCount;
-        personalLine = `You've logged this ${bestCount} time${bestCount===1?'':'s'}, most often during your ${PHASE_NAME[bestPhase].toLowerCase()} (${bestCount} of ${total} logged days in that phase).`;
-      } else if(bestCount === 1){
-        personalLine = `You've logged this once so far — keep tracking to see if a pattern emerges.`;
-      } else {
-        personalLine = `You haven't logged this yet — once you do, Bloom will start showing when it tends to happen for you.`;
-      }
-      resultEl.innerHTML = `<div class="checker-result-title">${checkerSelected}</div><div class="checker-result-personal">${personalLine}</div><div class="checker-result-body">${SYMPTOM_INFO[checkerSelected] || ''}</div>`;
-      resultEl.classList.add('active');
+
+  function currentPhaseKey(c){
+    return c.inCurrentPeriod ? 'period' : phaseAt(Math.min(c.avgCycleLength, Math.max(1,c.cycleDayIndex)), c);
+  }
+
+  function symptomAnswer(key, c){
+    const label = key.replace(/\b\w/g, ch => ch.toUpperCase());
+    const { buckets, dayCounts } = computePhasePatterns();
+    let bestPhase = null, bestCount = 0;
+    Object.keys(buckets).forEach(phase => {
+      const count = buckets[phase][label] || 0;
+      if(count > bestCount){ bestCount = count; bestPhase = phase; }
     });
+    let personalLine;
+    if(bestPhase && bestCount >= 2){
+      const total = dayCounts[bestPhase] || bestCount;
+      personalLine = `You've logged <b>${label}</b> ${bestCount} time${bestCount===1?'':'s'}, most often during your ${PHASE_NAME[bestPhase].toLowerCase()} (${bestCount} of ${total} logged days in that phase).`;
+    } else if(bestCount === 1){
+      personalLine = `You've logged <b>${label}</b> once so far — keep tracking to see if a pattern emerges.`;
+    } else {
+      personalLine = `You haven't logged <b>${label}</b> yet — once you do, I'll start showing when it tends to happen for you.`;
+    }
+    return `${personalLine}<br><br>${SYMPTOM_INFO[key]}`;
+  }
+
+  // Ordered from most to least specific — first match wins.
+  const INTENTS = [
+    { re: /how long.*period|period length|period.*last.*how many days/i,
+      fn: c => !c.runs.length ? null : `Your periods have averaged <b>${c.avgPeriodLength} day${c.avgPeriodLength===1?'':'s'}</b>, based on ${c.runs.length} logged cycle${c.runs.length===1?'':'s'}.` },
+    { re: /how many (cycles|periods)|cycles logged/i,
+      fn: c => `You've logged <b>${c.runs.length} cycle${c.runs.length===1?'':'s'}</b> so far.` },
+    { re: /regular|pattern|how.*cycle.*been|how am i doing|summary/i,
+      fn: c => {
+        if(!c.runs.length) return "You haven't logged a period yet, so there's nothing to compare against — log your first one and I can start tracking regularity.";
+        const daysSinceStart = daysBetween(c.lastStart, startOfDay(new Date())) + 1;
+        const loggedDays = Object.keys(state.logs).filter(d => fromStr(d) >= c.lastStart).length;
+        const regNote = c.confidence === 'high' ? "Your cycles have been pretty consistent lately." : c.confidence === 'medium' ? "You're building up a solid pattern." : "Still early days for spotting a pattern — keep logging.";
+        return `You're on day ${daysSinceStart} of this cycle, with <b>${loggedDays} day${loggedDays===1?'':'s'}</b> logged. ${regNote}`;
+      } },
+    { re: /what.*normal|what.*expect|typical for me|how (do|will) i (feel|be)/i,
+      fn: c => {
+        const phase = currentPhaseKey(c);
+        const { buckets, dayCounts } = computePhasePatterns();
+        const top = Object.entries(buckets[phase]).sort((a,b)=>b[1]-a[1]).slice(0,3);
+        if(!top.length) return `You're in your <b>${PHASE_NAME[phase]}</b> — no logged patterns for this phase yet, so nothing to predict from your own data. Log a few more of these phases and I'll be able to tell you what's typical for you.`;
+        const total = dayCounts[phase];
+        return `You're in your <b>${PHASE_NAME[phase]}</b>. In past cycles during this phase, you've most often logged: ${top.map(([k,v])=>`${k} (${v} of ${total})`).join(', ')}.`;
+      } },
+    { re: /ovulat/i,
+      fn: c => {
+        if(!c.runs.length) return null;
+        const days = daysBetween(startOfDay(new Date()), c.predictedOvulationDate);
+        return days === 0 ? `Today is your predicted <b>ovulation day</b>.`
+          : days > 0 ? `Predicted ovulation is in <b>${days} day${days===1?'':'s'}</b>, on ${fmtLong(c.predictedOvulationDate)}.`
+          : `Predicted ovulation was <b>${Math.abs(days)} day${Math.abs(days)===1?'':'s'} ago</b>, on ${fmtLong(c.predictedOvulationDate)}.`;
+      } },
+    { re: /fertile|can i (get|fall) pregnant|pregnant today/i,
+      fn: c => !c.runs.length ? null : (c.inFertileWindow
+        ? `Yes — today falls inside your predicted <b>fertile window</b> (${fmtLong(c.fertileStartDate)} to ${fmtLong(c.fertileEndDate)}).`
+        : `Not currently — your predicted fertile window is <b>${fmtLong(c.fertileStartDate)} to ${fmtLong(c.fertileEndDate)}</b>.`) },
+    { re: /what phase|what day|cycle day|where am i in/i,
+      fn: c => !c.runs.length ? null : (() => {
+        const phase = currentPhaseKey(c);
+        return `You're in your <b>${PHASE_NAME[phase]}</b> — cycle day ${c.inCurrentPeriod ? daysBetween(c.lastRun.startDate, new Date())+1 : c.cycleDayIndex} of an average ${c.avgCycleLength}-day cycle.`;
+      })() },
+    { re: /last period|previous period/i,
+      fn: c => !c.runs.length ? null : `Your last period started on <b>${fmtLong(c.lastStart)}</b>.` },
+    { re: /next period|when.*period|period due/i,
+      fn: c => !c.runs.length ? null : `Your next period is predicted for <b>${fmtLong(c.predictedNextStart)}</b>, ${c.daysUntilNext >= 0 ? `${c.daysUntilNext} day${c.daysUntilNext===1?'':'s'} away` : `${Math.abs(c.daysUntilNext)} day${Math.abs(c.daysUntilNext)===1?'':'s'} overdue`}${c.runs.length>=2 ? ` (typically ±${c.predictionWindow} days)` : ''}.` },
+    { re: /^(hi|hello|hey|yo)\b/i,
+      fn: () => `Hi! Ask me about your cycle, or a symptom you're noticing — I'll answer from your own logged data.` },
+    { re: /thank/i,
+      fn: () => `You're welcome! Anything else you'd like to know?` }
+  ];
+
+  function answerFor(raw, c){
+    const msg = raw.trim().toLowerCase();
+    for(const intent of INTENTS){
+      if(intent.re.test(msg)){
+        const ans = intent.fn(c);
+        if(ans) return ans;
+        break;
+      }
+    }
+    for(const key of Object.keys(SYMPTOM_INFO)){
+      if(msg.includes(key)) return symptomAnswer(key, c);
+    }
+    if(!c.runs.length){
+      return "I don't have enough logged data to answer that yet — log your first period and I'll be able to help properly.";
+    }
+    return "I'm not sure about that one yet — try asking about your next period, fertile window, ovulation, or a symptom like cramps or tiredness.";
+  }
+
+  function addMsg(role, html){
+    const div = document.createElement('div');
+    div.className = 'assist-msg assist-msg-' + role;
+    div.innerHTML = html;
+    assistThread.appendChild(div);
+    assistThread.scrollTop = assistThread.scrollHeight;
+  }
+
+  const SUGGESTIONS_BY_PHASE = {
+    period: ["When's my next period?", "How long will my period last?", "Why do I get cramps?", "What's typical for me right now?"],
+    follicular: ["Am I fertile today?", "How many days until ovulation?", "What's typical for me right now?"],
+    fertile: ["Am I fertile today?", "How many days until ovulation?", "What's typical for me right now?"],
+    ovulation: ["Am I fertile today?", "What's typical for me right now?", "When's my next period?"],
+    luteal: ["When's my next period?", "What's typical for me right now?", "Why do I feel tired?", "How regular have my cycles been?"]
+  };
+  function renderSuggestions(c){
+    const box = document.getElementById('assistSuggestions');
+    const list = c.runs.length ? (SUGGESTIONS_BY_PHASE[currentPhaseKey(c)] || SUGGESTIONS_BY_PHASE.follicular) : ["When's my next period?", "How many cycles have I logged?", "Why do I get cramps?"];
+    box.innerHTML = '';
+    list.forEach(q => {
+      const chip = document.createElement('button');
+      chip.className = 'assist-suggest-chip';
+      chip.textContent = q;
+      chip.addEventListener('click', () => handleAsk(q));
+      box.appendChild(chip);
+    });
+  }
+
+  function handleAsk(text){
+    if(!text.trim()) return;
+    addMsg('user', text);
+    const c = computeCycle();
+    addMsg('bot', answerFor(text, c));
+    renderSuggestions(c);
+  }
+
+  document.getElementById('assistantBtn').addEventListener('click', () => {
+    assistantOverlay.classList.add('active');
+    if(!assistThread.children.length){
+      addMsg('bot', "Hi — ask me anything about your cycle, or tap a suggestion below.");
+    }
+    renderSuggestions(computeCycle());
+  });
+  document.getElementById('assistantCloseBtn').addEventListener('click', () => assistantOverlay.classList.remove('active'));
+  document.getElementById('assistSendBtn').addEventListener('click', () => {
+    handleAsk(assistInput.value);
+    assistInput.value = '';
+  });
+  assistInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){
+      handleAsk(assistInput.value);
+      assistInput.value = '';
+    }
   });
 
   document.getElementById('shareBtn').addEventListener('click', async () => {
