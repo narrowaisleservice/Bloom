@@ -26,6 +26,9 @@
     --ink-300:#B3A2B0;
     --line:#E9DCE2;
     --shadow: 0 8px 24px rgba(36,18,32,0.14);
+    --glow-rose: 0 0 0 1px rgba(193,84,107,0.12), 0 18px 40px -12px rgba(193,84,107,0.35);
+    --grad-hero: linear-gradient(135deg, var(--rose-500) 0%, var(--gold-400) 100%);
+    --grad-btn: linear-gradient(135deg, var(--plum-800) 0%, var(--plum-950) 100%);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -58,6 +61,14 @@
     font-size:26px;
     color:var(--cream-50);
     letter-spacing:0.2px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+  .brand-mark{
+    width:26px;height:26px;
+    flex-shrink:0;
+    filter:drop-shadow(0 2px 6px rgba(217,165,92,0.5));
   }
   .icon-btn{
     background:rgba(255,255,255,0.08);
@@ -110,13 +121,16 @@
   .wheel-ring{
     width:100%;height:100%;
     border-radius:50%;
+    box-shadow: 0 20px 44px -14px rgba(36,18,32,0.45), 0 0 0 6px rgba(251,243,236,0.5);
+    transition: filter .3s ease;
   }
   .wheel-hole{
     position:absolute;
     top:31px;left:31px;
     width:188px;height:188px;
     border-radius:50%;
-    background:var(--cream-50);
+    background:radial-gradient(120% 120% at 30% 20%, #ffffff 0%, var(--cream-50) 55%, var(--cream-100) 100%);
+    box-shadow: inset 0 2px 10px rgba(36,18,32,0.06);
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -178,6 +192,34 @@
   .chance-badge.chance-low{ background:var(--cream-100); color:var(--ink-500); }
   .chance-badge.chance-medium{ background:var(--sage-300); color:var(--plum-950); }
   .chance-badge.chance-peak{ background:var(--rose-500); color:#fff; }
+  .confidence-badge{
+    margin-top:8px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.3px;
+    padding:4px 12px 4px 9px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+  }
+  .confidence-badge::before{
+    content:'';
+    width:6px;height:6px;
+    border-radius:50%;
+    flex-shrink:0;
+  }
+  .confidence-badge.conf-low{ background:var(--cream-100); color:var(--ink-500); }
+  .confidence-badge.conf-low::before{ background:var(--ink-300); }
+  .confidence-badge.conf-medium{ background:#F3E5D3; color:#8a5a1f; }
+  .confidence-badge.conf-medium::before{ background:var(--gold-400); }
+  .confidence-badge.conf-high{ background:var(--sage-300); color:#33512c; }
+  .confidence-badge.conf-high::before{ background:var(--sage-500); }
+  .window-note{
+    font-weight:400;
+    font-size:12.5px;
+    color:var(--ink-500);
+  }
   .day-phase-info{
     font-size:12.5px;
     font-weight:600;
@@ -199,6 +241,9 @@
     display:flex;align-items:center;gap:6px;
     font-size:11.5px;
     color:var(--ink-500);
+    background:var(--cream-100);
+    padding:5px 10px 5px 8px;
+    border-radius:999px;
   }
   .legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 
@@ -206,7 +251,8 @@
     margin-top:20px;
     width:100%;
     border:none;
-    background:var(--plum-950);
+    background:var(--grad-btn);
+    box-shadow:0 10px 24px -8px rgba(36,18,32,0.5);
     color:var(--cream-50);
     font-family:'Inter',sans-serif;
     font-weight:600;
@@ -215,9 +261,9 @@
     border-radius:14px;
     cursor:pointer;
     display:flex;align-items:center;justify-content:center;gap:8px;
-    transition:transform .12s ease, background .15s ease;
+    transition:transform .12s ease, box-shadow .15s ease;
   }
-  .log-today-btn:hover{background:var(--plum-800);}
+  .log-today-btn:hover{box-shadow:0 12px 28px -8px rgba(36,18,32,0.6);}
   .log-today-btn:active{transform:scale(0.98);}
   .log-today-btn svg{width:17px;height:17px;}
   .streak-note{
@@ -249,6 +295,16 @@
     font-size:19px;
     color:var(--cream-50);
     margin:22px 4px 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .section-title::before{
+    content:'';
+    width:7px;height:7px;
+    border-radius:50%;
+    background:var(--grad-hero);
+    flex-shrink:0;
   }
 
   /* ---------- Calendar ---------- */
@@ -343,10 +399,36 @@
   .stat-card{
     background:var(--cream-50);
     border-radius:18px;
-    padding:16px 10px;
+    padding:16px 10px 14px;
     text-align:center;
     box-shadow:var(--shadow);
+    border-top:3px solid var(--rose-300);
   }
+  .stat-card:nth-child(2){ border-top-color:var(--gold-400); }
+  .stat-card:nth-child(3){ border-top-color:var(--sage-500); }
+  .smart-insight-card{
+    background:var(--grad-hero);
+    box-shadow:var(--glow-rose);
+    color:#fff;
+  }
+  .smart-insight-label{
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:rgba(255,255,255,0.85);
+    margin-bottom:9px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .smart-insight-row{
+    font-size:14px;
+    line-height:1.55;
+    margin-bottom:9px;
+  }
+  .smart-insight-row:last-child{ margin-bottom:0; }
+  .smart-insight-row b{ font-weight:700; }
   .stat-num{
     font-family:'Fraunces',serif;
     font-weight:520;
@@ -415,6 +497,51 @@
     color:var(--ink-500);
     line-height:1.5;
     margin-top:6px;
+  }
+  .assist-q-chip{
+    border:1.5px solid var(--line);
+    background:#fff;
+    padding:10px 14px;
+    border-radius:14px;
+    font-size:13.5px;
+    font-weight:500;
+    color:var(--ink-800);
+    cursor:pointer;
+    text-align:left;
+    width:100%;
+    margin-bottom:8px;
+    display:block;
+    transition:all .12s ease;
+  }
+  .assist-q-chip:hover{ border-color:var(--rose-300); background:var(--cream-100); }
+  .assist-answer{
+    background:var(--cream-100);
+    border-radius:16px;
+    padding:16px;
+    font-size:14px;
+    line-height:1.55;
+    color:var(--ink-800);
+    margin-top:4px;
+    margin-bottom:18px;
+    display:none;
+  }
+  .assist-answer.active{ display:block; animation: fadeUp .3s ease both; }
+  .assist-answer b{ color:var(--rose-500); }
+  .checker-result{
+    background:var(--cream-100);
+    border-radius:16px;
+    padding:16px;
+    margin-top:12px;
+    display:none;
+  }
+  .checker-result.active{ display:block; animation: fadeUp .3s ease both; }
+  .checker-result-title{ font-weight:700; font-size:14.5px; margin-bottom:6px; color:var(--plum-950); }
+  .checker-result-personal{ font-size:13px; color:var(--rose-500); font-weight:600; margin-bottom:8px; }
+  .checker-result-body{ font-size:13.5px; line-height:1.55; color:var(--ink-800); }
+  .assist-divider{
+    border:none;
+    border-top:1px solid var(--line);
+    margin:22px 0 18px;
   }
 
   /* ---------- Bottom nav ---------- */
@@ -697,8 +824,24 @@
 <div class="app" id="app" style="display:none;">
 
   <div class="app-header">
-    <div class="brand">Bloom</div>
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none">
+        <defs><linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#E3AEB9"/><stop offset="100%" stop-color="#D9A55C"/></linearGradient></defs>
+        <g fill="url(#brandGrad)">
+          <ellipse cx="12" cy="6.5" rx="3.6" ry="5"/>
+          <ellipse cx="12" cy="6.5" rx="3.6" ry="5" transform="rotate(72 12 12)"/>
+          <ellipse cx="12" cy="6.5" rx="3.6" ry="5" transform="rotate(144 12 12)"/>
+          <ellipse cx="12" cy="6.5" rx="3.6" ry="5" transform="rotate(216 12 12)"/>
+          <ellipse cx="12" cy="6.5" rx="3.6" ry="5" transform="rotate(288 12 12)"/>
+        </g>
+        <circle cx="12" cy="12" r="2.6" fill="#FBF3EC"/>
+      </svg>
+      Bloom
+    </div>
     <div class="sync-indicator" id="syncIndicator"><span class="btn-spinner"></span>Syncing</div>
+    <button class="icon-btn" id="assistantBtn" aria-label="Bloom Assistant" style="margin-right:8px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.6 4.9L18.5 9.5 13.6 11.1 12 16l-1.6-4.9L5.5 9.5l4.9-1.6L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
+    </button>
     <button class="icon-btn" id="settingsBtn" aria-label="Settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.08 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
@@ -720,6 +863,7 @@
         <div class="wheel-status" id="wheelStatus">—</div>
         <div class="wheel-phase" id="wheelPhase">—</div>
         <div class="chance-badge" id="chanceBadge">—</div>
+        <div class="confidence-badge" id="confidenceBadge" style="display:none;"></div>
 
         <div class="legend-row">
           <div class="legend-item"><span class="legend-dot" style="background:var(--rose-500)"></span>Period</div>
@@ -765,6 +909,8 @@
 
     <!-- INSIGHTS VIEW -->
     <div class="view" id="view-insights">
+      <div class="card smart-insight-card" id="smartInsightCard" style="display:none;"></div>
+
       <div class="stat-row">
         <div class="stat-card"><div class="stat-num" id="statCycleLen">—</div><div class="stat-label">Avg cycle</div></div>
         <div class="stat-card"><div class="stat-num" id="statPeriodLen">—</div><div class="stat-label">Avg period</div></div>
@@ -954,6 +1100,48 @@
   </div>
 </div>
 
+<!-- BLOOM ASSISTANT SHEET -->
+<div class="overlay" id="assistantOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Bloom Assistant</div>
+    <div class="sheet-sub">Quick answers from your own logged data, plus a checker for what you're feeling.</div>
+
+    <div class="field-label">Ask something quick</div>
+    <button class="assist-q-chip" data-q="next">When's my next period?</button>
+    <button class="assist-q-chip" data-q="fertile">Am I fertile today?</button>
+    <button class="assist-q-chip" data-q="phase">What phase am I in?</button>
+    <button class="assist-q-chip" data-q="ovulation">How many days until ovulation?</button>
+    <button class="assist-q-chip" data-q="summary">How has this cycle been so far?</button>
+    <div class="assist-answer" id="assistAnswer"></div>
+
+    <hr class="assist-divider">
+
+    <div class="field-label">Symptom checker</div>
+    <div class="sheet-sub" style="margin-bottom:12px;">Tap what you're noticing.</div>
+    <div class="chip-group" id="checkerChips">
+      <button class="chip" data-check="Cramps">Cramps</button>
+      <button class="chip" data-check="Headache">Headache</button>
+      <button class="chip" data-check="Bloating">Bloating</button>
+      <button class="chip" data-check="Tender breasts">Tender breasts</button>
+      <button class="chip" data-check="Backache">Backache</button>
+      <button class="chip" data-check="Nausea">Nausea</button>
+      <button class="chip" data-check="Acne">Acne</button>
+      <button class="chip" data-check="Cravings">Cravings</button>
+      <button class="chip" data-check="Tired">Tired</button>
+      <button class="chip" data-check="Irritable">Irritable</button>
+      <button class="chip" data-check="Anxious">Anxious</button>
+      <button class="chip" data-check="Sad">Sad</button>
+    </div>
+    <div class="checker-result" id="checkerResult"></div>
+    <div class="settings-section-note" style="margin-top:14px;">General information only, based on typical cycle patterns and your own logged history — not a diagnosis. Talk to a doctor about anything severe, sudden, or out of the ordinary for you.</div>
+
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" id="assistantCloseBtn" style="flex:1;">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- SETTINGS SHEET -->
 <div class="overlay" id="settingsOverlay">
   <div class="sheet">
@@ -984,6 +1172,12 @@
     </div>
     <div class="settings-section-note">Everything's saved to your Google Sheet, so it's already safe across devices. Export gives you a local copy too; import replaces your sheet's data with a backup file.</div>
     <input type="file" id="importFileInput" accept="application/json" style="display:none;">
+
+    <div class="field-label">Share with a partner</div>
+    <div class="settings-row">
+      <button class="btn btn-ghost" id="shareBtn" style="flex:1;">Copy shareable summary</button>
+    </div>
+    <div class="settings-section-note">Copies a short, plain-text status update — today's phase, fertile window and next-period estimate — with no symptom, mood or intimacy details, ready to paste into a message.</div>
 
     <div class="field-label">For your doctor</div>
     <div class="settings-row">
@@ -1129,6 +1323,18 @@
     avgCycleLength = Math.min(45, Math.max(18, avgCycleLength));
     avgPeriodLength = Math.min(12, Math.max(1, avgPeriodLength));
 
+    // How much her cycle length actually varies, and how much to trust the prediction.
+    let cycleStdDev = 0;
+    if(cycleGaps.length >= 2){
+      const mean = cycleGaps.reduce((a,b)=>a+b,0) / cycleGaps.length;
+      const variance = cycleGaps.reduce((a,g)=>a + Math.pow(g-mean,2), 0) / cycleGaps.length;
+      cycleStdDev = Math.round(Math.sqrt(variance));
+    }
+    let confidence = 'low';
+    if(runs.length >= 4 && cycleStdDev <= 3) confidence = 'high';
+    else if(runs.length >= 2) confidence = 'medium';
+    const predictionWindow = confidence === 'low' ? 4 : Math.max(2, cycleStdDev);
+
     const lastRun = runs.length ? runs[runs.length-1] : null;
     const lastStart = lastRun ? lastRun.startDate : fromStr(s.lastPeriodStart || todayStr());
 
@@ -1159,7 +1365,8 @@
       cycleDayIndex, ovulationIndex, fertileStart, fertileEnd,
       predictedNextStart, predictedOvulationDate, fertileStartDate, fertileEndDate,
       pmsStartDate, pmsEndDate, daysUntilNext,
-      inCurrentPeriod, inFertileWindow, isOvulationDay, inPmsWindow, lastRun
+      inCurrentPeriod, inFertileWindow, isOvulationDay, inPmsWindow, lastRun,
+      cycleStdDev, confidence, predictionWindow
     };
   }
 
@@ -1248,6 +1455,16 @@
     chanceEl.textContent = `Pregnancy chance: ${chance}`;
     chanceEl.className = 'chance-badge ' + (CHANCE_CLASS[chance] || 'chance-low');
 
+    const confEl = document.getElementById('confidenceBadge');
+    if(c.runs.length >= 1){
+      const confLabelMap = { high:'Strong predictions', medium:'Good predictions', low:'Learning your cycle' };
+      confEl.style.display = 'inline-flex';
+      confEl.textContent = confLabelMap[c.confidence];
+      confEl.className = 'confidence-badge conf-' + c.confidence;
+    } else {
+      confEl.style.display = 'none';
+    }
+
     let status;
     if(c.inCurrentPeriod){
       status = `Day ${dayNum} of your period`;
@@ -1262,7 +1479,9 @@
     } else if(c.daysUntilNext === 0){
       status = `Your period is <b>due today</b>`;
     } else {
-      status = `<b>${c.daysUntilNext} day${c.daysUntilNext===1?'':'s'}</b> until your next period`;
+      const showWindow = c.runs.length >= 2 && c.daysUntilNext > c.predictionWindow;
+      const windowNote = showWindow ? ` <span class="window-note">(typically ±${c.predictionWindow} days)</span>` : '';
+      status = `<b>${c.daysUntilNext} day${c.daysUntilNext===1?'':'s'}</b> until your next period${windowNote}`;
     }
     document.getElementById('wheelStatus').innerHTML = status;
 
@@ -1355,6 +1574,58 @@
     }
   }
 
+  /* ---------------- phase pattern analysis (shared by insights list + smart insight) ---------------- */
+  function computePhasePatterns(){
+    const buckets = { period:{}, follicular:{}, fertile:{}, ovulation:{}, luteal:{} };
+    const dayCounts = { period:0, follicular:0, fertile:0, ovulation:0, luteal:0 };
+    Object.keys(state.logs).forEach(ds => {
+      const phase = phaseForDate(fromStr(ds));
+      if(!phase) return;
+      const e = state.logs[ds];
+      if((e.mood && e.mood.length) || (e.symptoms && e.symptoms.length)) dayCounts[phase]++;
+      (e.mood||[]).forEach(m => buckets[phase][m] = (buckets[phase][m]||0)+1);
+      (e.symptoms||[]).forEach(s => buckets[phase][s] = (buckets[phase][s]||0)+1);
+    });
+    return { buckets, dayCounts };
+  }
+
+  /* ---------------- smart insight ---------------- */
+  function renderSmartInsight(c){
+    const card = document.getElementById('smartInsightCard');
+    const rows = [];
+
+    if(c.runs.length >= 2){
+      const confPhrase = c.confidence === 'high' ? 'Strong'
+        : c.confidence === 'medium' ? 'Good'
+        : 'Building';
+      const variancePhrase = c.cycleGaps.length >= 2 ? ` with about ±${c.cycleStdDev} days of natural variation` : '';
+      rows.push(`${confPhrase} prediction confidence — based on <b>${c.runs.length} logged cycle${c.runs.length===1?'':'s'}</b> averaging <b>${c.avgCycleLength} days</b>${variancePhrase}.`);
+    }
+
+    const { buckets, dayCounts } = computePhasePatterns();
+    let best = null;
+    Object.keys(buckets).forEach(phase => {
+      const total = dayCounts[phase];
+      if(total < 3) return;
+      Object.entries(buckets[phase]).forEach(([item, count]) => {
+        const pct = count / total;
+        if(count >= 3 && pct >= 0.5 && (!best || pct > best.pct)){
+          best = { phase, item, count, total, pct };
+        }
+      });
+    });
+    if(best){
+      rows.push(`<b>${best.item}</b> has shown up in ${best.count} of your ${best.total} logged days during your ${PHASE_NAME[best.phase].toLowerCase()} — a pattern worth knowing about.`);
+    }
+
+    if(!rows.length){
+      card.style.display = 'none';
+      return;
+    }
+    card.style.display = 'block';
+    card.innerHTML = `<div class="smart-insight-label">✦ Smart insight</div>` + rows.map(r => `<div class="smart-insight-row">${r}</div>`).join('');
+  }
+
   /* ---------------- rendering: insights ---------------- */
   function renderInsights(c){
     document.getElementById('statCycleLen').textContent = c.runs.length ? c.avgCycleLength : '—';
@@ -1429,14 +1700,7 @@
         </div>`).join('');
     }
 
-    const phaseBuckets = { period:{}, follicular:{}, fertile:{}, ovulation:{}, luteal:{} };
-    Object.keys(state.logs).forEach(ds => {
-      const phase = phaseForDate(fromStr(ds));
-      if(!phase) return;
-      const e = state.logs[ds];
-      (e.mood||[]).forEach(m => phaseBuckets[phase][m] = (phaseBuckets[phase][m]||0)+1);
-      (e.symptoms||[]).forEach(s => phaseBuckets[phase][s] = (phaseBuckets[phase][s]||0)+1);
-    });
+    const { buckets: phaseBuckets } = computePhasePatterns();
     const phaseRows = ['period','follicular','fertile','ovulation','luteal'].map(p => {
       const top = Object.entries(phaseBuckets[p]).sort((a,b)=>b[1]-a[1]).slice(0,3);
       if(!top.length) return null;
@@ -1569,6 +1833,7 @@
     renderWheel(c);
     renderCalendar(c);
     renderInsights(c);
+    renderSmartInsight(c);
     renderStreak();
     renderTip(c);
   }
@@ -1791,6 +2056,109 @@
     }
   });
 
+  /* ---------------- bloom assistant: quick questions + symptom checker ---------------- */
+  const assistantOverlay = document.getElementById('assistantOverlay');
+  document.getElementById('assistantBtn').addEventListener('click', () => {
+    assistantOverlay.classList.add('active');
+  });
+  document.getElementById('assistantCloseBtn').addEventListener('click', () => assistantOverlay.classList.remove('active'));
+
+  document.querySelectorAll('.assist-q-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const c = computeCycle();
+      const q = chip.getAttribute('data-q');
+      let answer = '';
+      if(!c.runs.length){
+        answer = "Log your first period and I'll be able to answer this properly — for now everything's running on your default settings.";
+      } else if(q === 'next'){
+        answer = `Your next period is predicted for <b>${fmtLong(c.predictedNextStart)}</b>, ${c.daysUntilNext >= 0 ? `${c.daysUntilNext} day${c.daysUntilNext===1?'':'s'} away` : `${Math.abs(c.daysUntilNext)} day${Math.abs(c.daysUntilNext)===1?'':'s'} overdue`}${c.runs.length>=2 ? ` (typically ±${c.predictionWindow} days)` : ''}.`;
+      } else if(q === 'fertile'){
+        answer = c.inFertileWindow
+          ? `Yes — today falls inside your predicted <b>fertile window</b> (${fmtLong(c.fertileStartDate)} to ${fmtLong(c.fertileEndDate)}).`
+          : `Not currently — your predicted fertile window is <b>${fmtLong(c.fertileStartDate)} to ${fmtLong(c.fertileEndDate)}</b>.`;
+      } else if(q === 'phase'){
+        const phase = c.inCurrentPeriod ? 'period' : phaseAt(Math.min(c.avgCycleLength, Math.max(1,c.cycleDayIndex)), c);
+        answer = `You're in your <b>${PHASE_NAME[phase]}</b> — cycle day ${c.inCurrentPeriod ? daysBetween(c.lastRun.startDate, new Date())+1 : c.cycleDayIndex} of an average ${c.avgCycleLength}-day cycle.`;
+      } else if(q === 'ovulation'){
+        const days = daysBetween(startOfDay(new Date()), c.predictedOvulationDate);
+        answer = days === 0 ? `Today is your predicted <b>ovulation day</b>.`
+          : days > 0 ? `Predicted ovulation is in <b>${days} day${days===1?'':'s'}</b>, on ${fmtLong(c.predictedOvulationDate)}.`
+          : `Predicted ovulation was <b>${Math.abs(days)} day${Math.abs(days)===1?'':'s'} ago</b>, on ${fmtLong(c.predictedOvulationDate)}.`;
+      } else if(q === 'summary'){
+        const daysSinceStart = daysBetween(c.lastStart, startOfDay(new Date())) + 1;
+        const loggedDays = Object.keys(state.logs).filter(d => fromStr(d) >= c.lastStart).length;
+        answer = `You're on day ${daysSinceStart} of this cycle, with <b>${loggedDays} day${loggedDays===1?'':'s'}</b> logged so far. ${c.confidence === 'high' ? "Your cycles have been pretty consistent lately." : c.confidence === 'medium' ? "You're building up a solid pattern." : "Still early days for spotting a pattern — keep logging."}`;
+      }
+      const el = document.getElementById('assistAnswer');
+      el.innerHTML = answer;
+      el.classList.add('active');
+    });
+  });
+
+  const SYMPTOM_INFO = {
+    'Cramps': "Common during your period as the uterus contracts to shed its lining, and can start a day or two before bleeding begins. Heat, gentle movement and staying hydrated often help; mention it to a doctor if it's severe or stops you doing normal activities.",
+    'Headache': "Often linked to the hormone drop just before or during your period. Staying hydrated, regular sleep and reducing caffeine swings can help; frequent or severe headaches are worth checking with a doctor.",
+    'Bloating': "Common in the days before your period due to hormonal fluid retention. Reducing salty food, staying hydrated and gentle movement can ease it.",
+    'Tender breasts': "Common in the luteal phase (the back half of your cycle) as progesterone rises. A supportive bra and cutting back on caffeine sometimes helps.",
+    'Backache': "Often accompanies period cramps as prostaglandins affect the lower abdomen and back. Gentle stretching, heat or light exercise can help.",
+    'Nausea': "Some people notice mild nausea around ovulation or just before their period due to hormone shifts. If it's persistent, severe, or new for you, worth checking with a doctor.",
+    'Acne': "Hormonal shifts in the luteal phase can trigger breakouts for some people, usually easing once the period starts.",
+    'Cravings': "Very common in the luteal phase — often linked to shifting hormones and blood sugar. Balanced meals with protein and fibre can help keep energy steadier.",
+    'Tired': "Energy often dips in the luteal phase and during your period as hormones shift. Prioritising sleep and, for some people, checking iron levels can help.",
+    'Irritable': "Mood changes are common in the luteal phase as hormones shift — often grouped under PMS. Sleep, movement and stress management can help; if it's severe or disrupting daily life, a doctor can talk through options.",
+    'Anxious': "Some people notice more anxiety in the luteal phase as progesterone and serotonin interact. Regular routines and movement can help; talk to a doctor if it feels disproportionate or persistent.",
+    'Sad': "Low mood in the days before a period is common and usually lifts once bleeding starts. If it's severe or lasts beyond your period, it's worth discussing with a doctor — including screening for PMDD."
+  };
+  let checkerSelected = null;
+  document.querySelectorAll('[data-check]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const item = chip.getAttribute('data-check');
+      checkerSelected = (checkerSelected === item) ? null : item;
+      document.querySelectorAll('[data-check]').forEach(c => c.classList.toggle('selected', c.getAttribute('data-check') === checkerSelected));
+      const resultEl = document.getElementById('checkerResult');
+      if(!checkerSelected){
+        resultEl.classList.remove('active');
+        return;
+      }
+      const { buckets, dayCounts } = computePhasePatterns();
+      let personalLine = '';
+      let bestPhase = null, bestCount = 0;
+      Object.keys(buckets).forEach(phase => {
+        const count = buckets[phase][checkerSelected] || 0;
+        if(count > bestCount){ bestCount = count; bestPhase = phase; }
+      });
+      if(bestPhase && bestCount >= 2){
+        const total = dayCounts[bestPhase] || bestCount;
+        personalLine = `You've logged this ${bestCount} time${bestCount===1?'':'s'}, most often during your ${PHASE_NAME[bestPhase].toLowerCase()} (${bestCount} of ${total} logged days in that phase).`;
+      } else if(bestCount === 1){
+        personalLine = `You've logged this once so far — keep tracking to see if a pattern emerges.`;
+      } else {
+        personalLine = `You haven't logged this yet — once you do, Bloom will start showing when it tends to happen for you.`;
+      }
+      resultEl.innerHTML = `<div class="checker-result-title">${checkerSelected}</div><div class="checker-result-personal">${personalLine}</div><div class="checker-result-body">${SYMPTOM_INFO[checkerSelected] || ''}</div>`;
+      resultEl.classList.add('active');
+    });
+  });
+
+  document.getElementById('shareBtn').addEventListener('click', async () => {
+    const c = computeCycle();
+    let text = `Bloom update — ${fmtShort(new Date())}\n`;
+    if(!c.runs.length){
+      text += `No periods logged yet.`;
+    } else {
+      const phase = c.inCurrentPeriod ? 'period' : phaseAt(Math.min(c.avgCycleLength, Math.max(1,c.cycleDayIndex)), c);
+      text += `Currently in: ${PHASE_NAME[phase]}\n`;
+      text += `Fertile window: ${fmtShort(c.fertileStartDate)} – ${fmtShort(c.fertileEndDate)}\n`;
+      text += `Next period expected: ${fmtShort(c.predictedNextStart)}${c.runs.length>=2 ? ` (±${c.predictionWindow} days)` : ''}`;
+    }
+    try{
+      await navigator.clipboard.writeText(text);
+      alert('Copied — paste it into a message.');
+    }catch(e){
+      prompt('Copy this manually:', text);
+    }
+  });
+
   /* ---------------- settings / backup / reset ---------------- */
   const settingsOverlay = document.getElementById('settingsOverlay');
   const resetOverlay = document.getElementById('resetOverlay');
@@ -1963,7 +2331,7 @@
   });
 
   /* Tap outside a sheet to dismiss it (not onboarding — that one's required) */
-  [dayOverlay, settingsOverlay, resetOverlay].forEach(ov => {
+  [dayOverlay, settingsOverlay, resetOverlay, assistantOverlay].forEach(ov => {
     ov.addEventListener('click', (e) => { if(e.target === ov) ov.classList.remove('active'); });
   });
 
