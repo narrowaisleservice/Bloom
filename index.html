@@ -507,27 +507,70 @@
     padding:4px 2px 10px;
     margin-bottom:12px;
   }
+  .assist-row{
+    display:flex;
+    align-items:flex-end;
+    gap:7px;
+    max-width:100%;
+    animation: fadeUp .3s cubic-bezier(.25,.9,.4,1) both;
+  }
+  .assist-row-user{ align-self:flex-end; flex-direction:row-reverse; }
+  .assist-row-bot{ align-self:flex-start; }
+  .assist-avatar{
+    flex-shrink:0;
+    width:24px;height:24px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:1px;
+  }
+  .assist-avatar-bot{
+    background:var(--grad-hero);
+    box-shadow:0 2px 8px rgba(193,84,107,0.4);
+  }
+  .assist-avatar-bot svg{ width:13px;height:13px; stroke:#fff; }
+  .assist-avatar-user{
+    background:var(--plum-950);
+    color:var(--cream-50);
+    font-size:8.5px;
+    font-weight:700;
+    letter-spacing:0.2px;
+  }
   .assist-msg{
     max-width:82%;
     padding:11px 14px;
     border-radius:16px;
     font-size:13.5px;
     line-height:1.5;
-    animation: fadeUp .25s ease both;
   }
   .assist-msg b{ color:inherit; }
   .assist-msg-bot{
-    align-self:flex-start;
     background:var(--cream-100);
     color:var(--ink-800);
     border-bottom-left-radius:5px;
   }
   .assist-msg-bot b{ color:var(--rose-500); }
   .assist-msg-user{
-    align-self:flex-end;
     background:var(--grad-hero);
     color:#fff;
     border-bottom-right-radius:5px;
+  }
+  .assist-typing{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    padding:14px 16px;
+  }
+  .assist-typing span{
+    width:6px;height:6px;
+    border-radius:50%;
+    background:var(--ink-300);
+    animation: typingBounce 1.1s ease-in-out infinite;
+  }
+  .assist-typing span:nth-child(2){ animation-delay:.15s; }
+  .assist-typing span:nth-child(3){ animation-delay:.3s; }
+  @keyframes typingBounce{
+    0%,60%,100%{ transform:translateY(0); opacity:.5; }
+    30%{ transform:translateY(-4px); opacity:1; }
   }
   .assist-suggestions{
     display:flex;
@@ -613,13 +656,22 @@
   /* ---------- Modal sheet ---------- */
   .overlay{
     position:fixed; inset:0;
-    background:rgba(36,18,32,0.5);
+    background:rgba(36,18,32,0);
+    backdrop-filter:blur(0px);
+    -webkit-backdrop-filter:blur(0px);
     display:none;
     align-items:flex-end;
     justify-content:center;
     z-index:50;
+    transition:background .28s ease, backdrop-filter .28s ease;
   }
-  .overlay.active{display:flex;}
+  .overlay.active{
+    display:flex;
+    background:rgba(36,18,32,0.55);
+    backdrop-filter:blur(3px);
+    -webkit-backdrop-filter:blur(3px);
+  }
+  .overlay.closing{ background:rgba(36,18,32,0); backdrop-filter:blur(0px); -webkit-backdrop-filter:blur(0px); }
   .sheet{
     width:100%;
     max-width:440px;
@@ -628,22 +680,82 @@
     background:var(--cream-50);
     border-radius:26px 26px 0 0;
     padding:22px 22px calc(24px + env(safe-area-inset-bottom));
-    animation: slideUp .28s ease both;
+    box-shadow:0 -20px 50px -12px rgba(36,18,32,0.45);
+    position:relative;
+    animation: slideUp .38s cubic-bezier(.22,1.15,.4,1) both;
+    transform-origin:bottom center;
   }
-  @keyframes slideUp{from{transform:translateY(24px); opacity:0.4;} to{transform:translateY(0); opacity:1;}}
+  .overlay.closing .sheet{ animation: slideDown .22s ease both; }
+  @keyframes slideUp{from{transform:translateY(36px) scale(.98); opacity:0;} to{transform:translateY(0) scale(1); opacity:1;}}
+  @keyframes slideDown{from{transform:translateY(0); opacity:1;} to{transform:translateY(24px); opacity:0;}}
   .sheet-handle{
     width:38px;height:4px;
     background:var(--line);
     border-radius:999px;
     margin:0 auto 16px;
   }
+  .sheet-close-btn{
+    position:absolute;
+    top:18px; right:18px;
+    width:32px;height:32px;
+    border-radius:50%;
+    border:none;
+    background:var(--cream-100);
+    color:var(--ink-500);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:background .12s ease, color .12s ease, transform .12s ease;
+  }
+  .sheet-close-btn:hover{ background:var(--rose-300); color:var(--plum-950); }
+  .sheet-close-btn:active{ transform:scale(0.92); }
+  .sheet-close-btn svg{ width:15px;height:15px; }
   .sheet-title{
     font-family:'Fraunces',serif;
     font-weight:500;
     font-size:20px;
     margin-bottom:2px;
+    padding-right:26px;
   }
   .sheet-sub{font-size:12.5px;color:var(--ink-500); margin-bottom:18px;}
+
+  /* ---------- Toasts ---------- */
+  .toast-stack{
+    position:fixed;
+    top:calc(14px + env(safe-area-inset-top));
+    left:50%;
+    transform:translateX(-50%);
+    z-index:200;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    align-items:center;
+    width:100%;
+    max-width:400px;
+    padding:0 16px;
+    pointer-events:none;
+  }
+  .toast{
+    pointer-events:auto;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--plum-950);
+    color:var(--cream-50);
+    padding:13px 16px;
+    border-radius:14px;
+    font-size:13px;
+    font-weight:600;
+    line-height:1.4;
+    box-shadow:0 14px 34px -10px rgba(36,18,32,0.55);
+    max-width:100%;
+    animation: toastIn .32s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .toast.toast-leaving{ animation: toastOut .22s ease forwards; }
+  .toast.toast-error{ background:#9C3A50; }
+  .toast.toast-success{ background:var(--sage-500); }
+  .toast-icon{ flex-shrink:0; width:18px;height:18px; }
+  @keyframes toastIn{from{opacity:0; transform:translateY(-16px) scale(.92);} to{opacity:1; transform:translateY(0) scale(1);}}
+  @keyframes toastOut{to{opacity:0; transform:translateY(-10px) scale(.94);}}
   .field-label{
     font-size:12px;
     font-weight:700;
@@ -857,6 +969,8 @@
   <button id="loadingRetryBtn">Try again</button>
 </div>
 
+<div class="toast-stack" id="toastStack"></div>
+
 <div class="app" id="app" style="display:none;">
 
   <div class="app-header">
@@ -996,6 +1110,9 @@
 <!-- DAY EDITOR SHEET -->
 <div class="overlay" id="dayOverlay">
   <div class="sheet">
+    <button class="sheet-close-btn" id="dayCloseBtn" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
     <div class="sheet-handle"></div>
     <div class="sheet-title" id="sheetTitle">Today</div>
     <div class="sheet-sub" id="sheetSub"></div>
@@ -1139,6 +1256,9 @@
 <!-- BLOOM ASSISTANT SHEET -->
 <div class="overlay" id="assistantOverlay">
   <div class="sheet">
+    <button class="sheet-close-btn" id="assistantXBtn" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
     <div class="sheet-handle"></div>
     <div class="sheet-title">Bloom Assistant</div>
     <div class="sheet-sub">Ask anything about your cycle or a symptom — answers come from your own logged data.</div>
@@ -1163,6 +1283,9 @@
 <!-- SETTINGS SHEET -->
 <div class="overlay" id="settingsOverlay">
   <div class="sheet">
+    <button class="sheet-close-btn" id="settingsXBtn" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
     <div class="sheet-handle"></div>
     <div class="sheet-title">Settings</div>
     <div class="sheet-sub">Fine-tune your predictions and manage your data.</div>
@@ -1300,6 +1423,35 @@
       btn.disabled = false;
       if(btn.dataset.origHtml !== undefined) btn.innerHTML = btn.dataset.origHtml;
     }
+  }
+
+  /* ---------------- fancy sheet dismiss + toasts ---------------- */
+  function closeSheet(overlay){
+    if(!overlay.classList.contains('active')) return;
+    overlay.classList.add('closing');
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      overlay.classList.remove('closing');
+    }, 210);
+  }
+
+  const TOAST_ICONS = {
+    success: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>',
+    error: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>',
+    info: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>'
+  };
+  function showToast(message, type){
+    type = type || 'info';
+    const stack = document.getElementById('toastStack');
+    const el = document.createElement('div');
+    el.className = 'toast' + (type === 'error' ? ' toast-error' : type === 'success' ? ' toast-success' : '');
+    el.innerHTML = (TOAST_ICONS[type] || TOAST_ICONS.info) + `<span>${message}</span>`;
+    stack.appendChild(el);
+    const life = type === 'error' ? 4200 : 3000;
+    setTimeout(() => {
+      el.classList.add('toast-leaving');
+      setTimeout(() => el.remove(), 240);
+    }, life);
   }
 
   /* ---------------- cycle math ---------------- */
@@ -1921,7 +2073,8 @@
   }
 
   document.getElementById('logTodayBtn').addEventListener('click', () => openDayEditor(todayStr()));
-  document.getElementById('cancelDayBtn').addEventListener('click', () => dayOverlay.classList.remove('active'));
+  document.getElementById('cancelDayBtn').addEventListener('click', () => closeSheet(dayOverlay));
+  document.getElementById('dayCloseBtn').addEventListener('click', () => closeSheet(dayOverlay));
 
   periodSwitch.addEventListener('click', () => {
     const on = !periodSwitch.classList.contains('on');
@@ -2014,13 +2167,14 @@
     };
 
     if(isEmpty) delete state.logs[ds]; else state.logs[ds] = entry;
-    dayOverlay.classList.remove('active');
+    closeSheet(dayOverlay);
     renderAll();
 
     try{
       await apiPost(isEmpty ? { action:'deleteLog', date: ds } : { action:'saveLog', date: ds, entry });
+      showToast(isEmpty ? 'Entry cleared' : 'Saved', 'success');
     }catch(err){
-      alert("Couldn't save that to your sheet — check your connection and try again.");
+      showToast("Couldn't save to your sheet — check your connection.", 'error');
       await resync();
     }
   });
@@ -2028,12 +2182,13 @@
   document.getElementById('deleteDayBtn').addEventListener('click', async () => {
     const ds = state.editingDate;
     delete state.logs[ds];
-    dayOverlay.classList.remove('active');
+    closeSheet(dayOverlay);
     renderAll();
     try{
       await apiPost({ action:'deleteLog', date: ds });
+      showToast('Entry deleted', 'success');
     }catch(err){
-      alert("Couldn't delete that from your sheet — check your connection and try again.");
+      showToast("Couldn't delete from your sheet — check your connection.", 'error');
       await resync();
     }
   });
@@ -2067,8 +2222,9 @@
       state.settings = data.settings;
       onboardOverlay.classList.remove('active');
       renderAll();
+      showToast('Welcome to Bloom 🌸', 'success');
     }catch(err){
-      alert("Couldn't reach your sheet — check your connection and try again.");
+      showToast("Couldn't reach your sheet — check your connection and try again.", 'error');
     }finally{
       setBtnLoading(btn, false);
     }
@@ -2091,8 +2247,39 @@
     'tired': "Energy often dips in the luteal phase and during your period as hormones shift. Prioritising sleep and, for some people, checking iron levels can help.",
     'irritable': "Mood changes are common in the luteal phase as hormones shift — often grouped under PMS. Sleep, movement and stress management can help; if it's severe or disrupting daily life, a doctor can talk through options.",
     'anxious': "Some people notice more anxiety in the luteal phase as progesterone and serotonin interact. Regular routines and movement can help; talk to a doctor if it feels disproportionate or persistent.",
-    'sad': "Low mood in the days before a period is common and usually lifts once bleeding starts. If it's severe or lasts beyond your period, it's worth discussing with a doctor — including screening for PMDD."
+    'sad': "Low mood in the days before a period is common and usually lifts once bleeding starts. If it's severe or lasts beyond your period, it's worth discussing with a doctor — including screening for PMDD.",
+    'spotting': "Light spotting between periods can happen around ovulation for some people, or in the day or two before a period starts. Frequent or heavy spotting outside your period, or spotting alongside pain, is worth mentioning to a doctor.",
+    'insomnia': "Trouble sleeping is common in the luteal phase and just before a period, as progesterone and body temperature shift. A cooler room, a wind-down routine, and cutting evening caffeine can help.",
+    'dizzy': "Occasional light-headedness can happen around your period, sometimes linked to blood loss or skipped meals. Staying hydrated and eating regularly usually helps; frequent or severe dizziness is worth checking with a doctor."
   };
+
+  // Alternate phrasings mapped to a canonical SYMPTOM_INFO key.
+  const SYMPTOM_SYNONYMS = {
+    'exhausted':'tired', 'fatigue':'tired', 'fatigued':'tired', 'no energy':'tired', 'low energy':'tired', 'knackered':'tired',
+    'headaches':'headache', 'migraine':'headache', 'head hurts':'headache',
+    'cramping':'cramps', 'cramp':'cramps', 'period pain':'cramps', 'stomach ache':'cramps', 'tummy ache':'cramps',
+    'bloated':'bloating',
+    'sore breasts':'tender breasts', 'breast pain':'tender breasts', 'boobs hurt':'tender breasts', 'sore boobs':'tender breasts',
+    'back pain':'backache', 'lower back pain':'backache', 'back hurts':'backache',
+    'nauseous':'nausea', 'sick to my stomach':'nausea', 'queasy':'nausea', 'feel sick':'nausea',
+    'breakouts':'acne', 'spots':'acne', 'pimples':'acne', 'breaking out':'acne',
+    'craving':'cravings', 'hungry all the time':'cravings', 'sugar cravings':'cravings',
+    'moody':'irritable', 'snappy':'irritable', 'short tempered':'irritable',
+    'anxiety':'anxious', 'nervous':'anxious', 'on edge':'anxious', 'worried':'anxious',
+    'depressed':'sad', 'low mood':'sad', 'feeling down':'sad', 'tearful':'sad', 'crying':'sad',
+    "can't sleep":'insomnia', 'cant sleep':'insomnia', 'trouble sleeping':'insomnia', "can't fall asleep":'insomnia',
+    'lightheaded':'dizzy', 'light headed':'dizzy', 'faint':'dizzy'
+  };
+  function findSymptomKey(msg){
+    const candidates = [
+      ...Object.keys(SYMPTOM_INFO).map(k => [k, k]),
+      ...Object.entries(SYMPTOM_SYNONYMS)
+    ].sort((a,b) => b[0].length - a[0].length);
+    for(const [phrase, key] of candidates){
+      if(msg.includes(phrase)) return key;
+    }
+    return null;
+  }
 
   function currentPhaseKey(c){
     return c.inCurrentPeriod ? 'period' : phaseAt(Math.min(c.avgCycleLength, Math.max(1,c.cycleDayIndex)), c);
@@ -2118,52 +2305,83 @@
     return `${personalLine}<br><br>${SYMPTOM_INFO[key]}`;
   }
 
-  // Ordered from most to least specific — first match wins.
+  // Ordered from most to least specific — first match wins. Every fn always
+  // returns real, useful content: a personal number when there's data to back
+  // it, general cycle knowledge plus a clearly-labelled estimate when there
+  // isn't. Nothing here should ever bottom out in a bare "log more" refusal.
   const INTENTS = [
+    { re: /average cycle|cycle length|how long.*cycle/i,
+      fn: c => c.cycleGaps.length >= 2
+        ? `Your average cycle length is <b>${c.avgCycleLength} days</b>, based on ${c.cycleGaps.length} logged gap${c.cycleGaps.length===1?'':'s'} between periods.`
+        : `I don't have two logged periods yet to calculate a real average, so I'm using your typical-length setting of <b>${c.avgCycleLength} days</b> for now — that'll switch to your real average once a second period is logged. Most cycles fall somewhere between 21 and 35 days.` },
     { re: /how long.*period|period length|period.*last.*how many days/i,
-      fn: c => !c.runs.length ? null : `Your periods have averaged <b>${c.avgPeriodLength} day${c.avgPeriodLength===1?'':'s'}</b>, based on ${c.runs.length} logged cycle${c.runs.length===1?'':'s'}.` },
+      fn: c => c.runs.length
+        ? `Your periods have averaged <b>${c.avgPeriodLength} day${c.avgPeriodLength===1?'':'s'}</b>, based on ${c.runs.length} logged cycle${c.runs.length===1?'':'s'}.`
+        : `I don't have a logged period yet, so I'm using your default period length setting of <b>${c.avgPeriodLength} days</b>. Most periods last 2–7 days — log one and I'll switch to your real numbers.` },
     { re: /how many (cycles|periods)|cycles logged/i,
       fn: c => `You've logged <b>${c.runs.length} cycle${c.runs.length===1?'':'s'}</b> so far.` },
+    { re: /late|missed my period|period hasn't started|didn't get my period|period not come/i,
+      fn: c => c.daysUntilNext < 0
+        ? `Your period looks <b>${Math.abs(c.daysUntilNext)} day${Math.abs(c.daysUntilNext)===1?'':'s'} late</b> against the predicted date. A day or two of drift is completely normal since cycles vary. If it's well past your usual length, stress, travel, illness, exercise changes or hormonal shifts can all delay a period — a home pregnancy test or a chat with a doctor is worth considering if it's very late or you're concerned.`
+        : `You're not late — your next period is predicted for <b>${fmtLong(c.predictedNextStart)}</b>${c.daysUntilNext>=0 ? `, ${c.daysUntilNext} day${c.daysUntilNext===1?'':'s'} away` : ''}.` },
+    { re: /\bpms\b/i,
+      fn: c => `PMS covers the physical and emotional symptoms — bloating, cravings, low mood, irritability — that can show up in the luteal phase, roughly the one to two weeks before a period. ${c.runs.length ? `Your predicted PMS window this cycle is <b>${fmtLong(c.pmsStartDate)} to ${fmtLong(c.pmsEndDate)}</b>.` : ''} If it's severe enough to disrupt daily life, it's worth asking a doctor about PMDD, a more intense form of PMS.` },
+    { re: /birth control|the pill|implant|\biud\b|contracept/i,
+      fn: () => `I don't have anything specific on particular birth control methods — that's best discussed with a doctor or pharmacist. What I can help with is tracking how your cycle behaves, which is especially useful if you've recently started or come off a method, since cycles often take a little while to settle into a new pattern.` },
     { re: /regular|pattern|how.*cycle.*been|how am i doing|summary/i,
       fn: c => {
-        if(!c.runs.length) return "You haven't logged a period yet, so there's nothing to compare against — log your first one and I can start tracking regularity.";
+        if(!c.runs.length) return "You haven't logged a period yet, so there's nothing to compare against — once you log one I can start tracking regularity for you. As a general guide, some month-to-month variation in cycle length is completely normal.";
         const daysSinceStart = daysBetween(c.lastStart, startOfDay(new Date())) + 1;
         const loggedDays = Object.keys(state.logs).filter(d => fromStr(d) >= c.lastStart).length;
-        const regNote = c.confidence === 'high' ? "Your cycles have been pretty consistent lately." : c.confidence === 'medium' ? "You're building up a solid pattern." : "Still early days for spotting a pattern — keep logging.";
+        const regNote = c.confidence === 'high' ? "Your cycles have been pretty consistent lately." : c.confidence === 'medium' ? "You're building up a solid pattern." : "Still early days for spotting a pattern, but here's what I have so far.";
         return `You're on day ${daysSinceStart} of this cycle, with <b>${loggedDays} day${loggedDays===1?'':'s'}</b> logged. ${regNote}`;
       } },
+    { re: /is (it|this) normal|normal.*period|period.*normal/i,
+      fn: c => `Cycle length, flow and symptoms vary a lot between people, and even cycle to cycle for the same person. As a rough guide, cycles of 21–35 days and periods of 2–7 days are both typical. ${c.runs.length ? `Yours have averaged <b>${c.avgCycleLength}-day cycles</b> with <b>${c.avgPeriodLength}-day periods</b>.` : ''} A big, sudden change from what's normal for you, very heavy bleeding, or severe pain is worth a doctor's opinion.` },
     { re: /what.*normal|what.*expect|typical for me|how (do|will) i (feel|be)/i,
       fn: c => {
         const phase = currentPhaseKey(c);
         const { buckets, dayCounts } = computePhasePatterns();
         const top = Object.entries(buckets[phase]).sort((a,b)=>b[1]-a[1]).slice(0,3);
-        if(!top.length) return `You're in your <b>${PHASE_NAME[phase]}</b> — no logged patterns for this phase yet, so nothing to predict from your own data. Log a few more of these phases and I'll be able to tell you what's typical for you.`;
-        const total = dayCounts[phase];
-        return `You're in your <b>${PHASE_NAME[phase]}</b>. In past cycles during this phase, you've most often logged: ${top.map(([k,v])=>`${k} (${v} of ${total})`).join(', ')}.`;
+        const generalTip = (PHASE_TIPS[phase] || PHASE_TIPS.follicular)[0];
+        const personal = top.length
+          ? ` In your own logged history during this phase, you've most often noted: ${top.map(([k,v])=>`${k} (${v}×)`).join(', ')}.`
+          : ` You haven't logged enough days in this phase yet for a personal pattern to show — that'll fill in the more you track.`;
+        return `You're in your <b>${PHASE_NAME[phase]}</b>. ${generalTip}${personal}`;
       } },
     { re: /ovulat/i,
       fn: c => {
-        if(!c.runs.length) return null;
         const days = daysBetween(startOfDay(new Date()), c.predictedOvulationDate);
-        return days === 0 ? `Today is your predicted <b>ovulation day</b>.`
-          : days > 0 ? `Predicted ovulation is in <b>${days} day${days===1?'':'s'}</b>, on ${fmtLong(c.predictedOvulationDate)}.`
-          : `Predicted ovulation was <b>${Math.abs(days)} day${Math.abs(days)===1?'':'s'} ago</b>, on ${fmtLong(c.predictedOvulationDate)}.`;
+        const caveat = c.runs.length ? '' : " (an estimate from your default cycle length, since you haven't logged a period yet)";
+        return days === 0 ? `Today is your predicted <b>ovulation day</b>${caveat}.`
+          : days > 0 ? `Predicted ovulation is in <b>${days} day${days===1?'':'s'}</b>, on ${fmtLong(c.predictedOvulationDate)}${caveat}.`
+          : `Predicted ovulation was <b>${Math.abs(days)} day${Math.abs(days)===1?'':'s'} ago</b>, on ${fmtLong(c.predictedOvulationDate)}${caveat}.`;
       } },
     { re: /fertile|can i (get|fall) pregnant|pregnant today/i,
-      fn: c => !c.runs.length ? null : (c.inFertileWindow
-        ? `Yes — today falls inside your predicted <b>fertile window</b> (${fmtLong(c.fertileStartDate)} to ${fmtLong(c.fertileEndDate)}).`
-        : `Not currently — your predicted fertile window is <b>${fmtLong(c.fertileStartDate)} to ${fmtLong(c.fertileEndDate)}</b>.`) },
+      fn: c => {
+        const caveat = c.runs.length ? '' : ' (estimated from your default cycle length — log a period for a more personal estimate)';
+        return c.inFertileWindow
+          ? `Yes — today falls inside your predicted <b>fertile window</b> (${fmtLong(c.fertileStartDate)} to ${fmtLong(c.fertileEndDate)})${caveat}.`
+          : `Not currently — your predicted fertile window is <b>${fmtLong(c.fertileStartDate)} to ${fmtLong(c.fertileEndDate)}</b>${caveat}.`;
+      } },
+    { re: /pregnan/i,
+      fn: c => `I can't tell you that — only a pregnancy test or a doctor can. What I can tell you is your current pregnancy chance based on cycle phase: <b>${CHANCE_BY_PHASE[currentPhaseKey(c)]}</b>. If your period is late and you're wondering, a home test is the most reliable next step.` },
     { re: /what phase|what day|cycle day|where am i in/i,
-      fn: c => !c.runs.length ? null : (() => {
+      fn: c => {
         const phase = currentPhaseKey(c);
         return `You're in your <b>${PHASE_NAME[phase]}</b> — cycle day ${c.inCurrentPeriod ? daysBetween(c.lastRun.startDate, new Date())+1 : c.cycleDayIndex} of an average ${c.avgCycleLength}-day cycle.`;
-      })() },
+      } },
     { re: /last period|previous period/i,
-      fn: c => !c.runs.length ? null : `Your last period started on <b>${fmtLong(c.lastStart)}</b>.` },
+      fn: c => !c.runs.length ? "You haven't logged a period yet — tap \"Log today\" on the Today tab to add your most recent one, and I'll be able to tell you." : `Your last period started on <b>${fmtLong(c.lastStart)}</b>.` },
     { re: /next period|when.*period|period due/i,
-      fn: c => !c.runs.length ? null : `Your next period is predicted for <b>${fmtLong(c.predictedNextStart)}</b>, ${c.daysUntilNext >= 0 ? `${c.daysUntilNext} day${c.daysUntilNext===1?'':'s'} away` : `${Math.abs(c.daysUntilNext)} day${Math.abs(c.daysUntilNext)===1?'':'s'} overdue`}${c.runs.length>=2 ? ` (typically ±${c.predictionWindow} days)` : ''}.` },
+      fn: c => {
+        const caveat = c.runs.length ? (c.runs.length>=2 ? ` (typically ±${c.predictionWindow} days)` : '') : ' (estimated from your default cycle length — this sharpens once you log a period)';
+        return `Your next period is predicted for <b>${fmtLong(c.predictedNextStart)}</b>, ${c.daysUntilNext >= 0 ? `${c.daysUntilNext} day${c.daysUntilNext===1?'':'s'} away` : `${Math.abs(c.daysUntilNext)} day${Math.abs(c.daysUntilNext)===1?'':'s'} overdue`}${caveat}.`;
+      } },
+    { re: /what can you do|help me$|what.*ask you|what do you do/i,
+      fn: () => `I can tell you about your predicted next period, fertile window and ovulation, explain common symptoms, and show what's typical for you personally once you've logged a bit. Try things like "when's my next period" or "why do I get bloating".` },
     { re: /^(hi|hello|hey|yo)\b/i,
-      fn: () => `Hi! Ask me about your cycle, or a symptom you're noticing — I'll answer from your own logged data.` },
+      fn: () => `Hi! Ask me about your cycle, or a symptom you're noticing — I'll answer from your own logged data plus general cycle knowledge.` },
     { re: /thank/i,
       fn: () => `You're welcome! Anything else you'd like to know?` }
   ];
@@ -2177,21 +2395,44 @@
         break;
       }
     }
-    for(const key of Object.keys(SYMPTOM_INFO)){
-      if(msg.includes(key)) return symptomAnswer(key, c);
-    }
-    if(!c.runs.length){
-      return "I don't have enough logged data to answer that yet — log your first period and I'll be able to help properly.";
-    }
-    return "I'm not sure about that one yet — try asking about your next period, fertile window, ovulation, or a symptom like cramps or tiredness.";
+    const symKey = findSymptomKey(msg);
+    if(symKey) return symptomAnswer(symKey, c);
+    return "I didn't quite catch that — I'm best with things like your next period, fertile window, ovulation, how regular you've been, or a symptom like cramps, headaches or tiredness. Try rephrasing, or tap one of the suggestions below.";
+  }
+
+  function escapeHtml(s){
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  const BOT_AVATAR_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.6 4.9L18.5 9.5 13.6 11.1 12 16l-1.6-4.9L5.5 9.5l4.9-1.6L12 3z"/></svg>';
+  function avatarHTML(role){
+    return role === 'bot'
+      ? `<div class="assist-avatar assist-avatar-bot">${BOT_AVATAR_SVG}</div>`
+      : `<div class="assist-avatar assist-avatar-user">You</div>`;
   }
 
   function addMsg(role, html){
-    const div = document.createElement('div');
-    div.className = 'assist-msg assist-msg-' + role;
-    div.innerHTML = html;
-    assistThread.appendChild(div);
+    const row = document.createElement('div');
+    row.className = 'assist-row assist-row-' + role;
+    row.innerHTML = avatarHTML(role) + `<div class="assist-msg assist-msg-${role}">${html}</div>`;
+    assistThread.appendChild(row);
     assistThread.scrollTop = assistThread.scrollHeight;
+    return row;
+  }
+
+  function showTyping(){
+    const row = document.createElement('div');
+    row.className = 'assist-row assist-row-bot';
+    row.id = 'assistTypingRow';
+    row.innerHTML = avatarHTML('bot') + `<div class="assist-msg assist-msg-bot assist-typing"><span></span><span></span><span></span></div>`;
+    assistThread.appendChild(row);
+    assistThread.scrollTop = assistThread.scrollHeight;
+  }
+  function hideTyping(){
+    const row = document.getElementById('assistTypingRow');
+    if(row) row.remove();
   }
 
   const SUGGESTIONS_BY_PHASE = {
@@ -2216,10 +2457,16 @@
 
   function handleAsk(text){
     if(!text.trim()) return;
-    addMsg('user', text);
+    addMsg('user', escapeHtml(text));
     const c = computeCycle();
-    addMsg('bot', answerFor(text, c));
-    renderSuggestions(c);
+    const answer = answerFor(text, c);
+    showTyping();
+    const delay = 420 + Math.random() * 380;
+    setTimeout(() => {
+      hideTyping();
+      addMsg('bot', answer);
+      renderSuggestions(c);
+    }, delay);
   }
 
   document.getElementById('assistantBtn').addEventListener('click', () => {
@@ -2229,7 +2476,8 @@
     }
     renderSuggestions(computeCycle());
   });
-  document.getElementById('assistantCloseBtn').addEventListener('click', () => assistantOverlay.classList.remove('active'));
+  document.getElementById('assistantCloseBtn').addEventListener('click', () => closeSheet(assistantOverlay));
+  document.getElementById('assistantXBtn').addEventListener('click', () => closeSheet(assistantOverlay));
   document.getElementById('assistSendBtn').addEventListener('click', () => {
     handleAsk(assistInput.value);
     assistInput.value = '';
@@ -2254,7 +2502,7 @@
     }
     try{
       await navigator.clipboard.writeText(text);
-      alert('Copied — paste it into a message.');
+      showToast('Copied — paste it into a message.', 'success');
     }catch(e){
       prompt('Copy this manually:', text);
     }
@@ -2269,7 +2517,8 @@
     document.getElementById('setPeriodLen').value = state.settings.defaultPeriodLength;
     settingsOverlay.classList.add('active');
   });
-  document.getElementById('settingsCloseBtn').addEventListener('click', () => settingsOverlay.classList.remove('active'));
+  document.getElementById('settingsCloseBtn').addEventListener('click', () => closeSheet(settingsOverlay));
+  document.getElementById('settingsXBtn').addEventListener('click', () => closeSheet(settingsOverlay));
 
   document.getElementById('setSaveBtn').addEventListener('click', async () => {
     const cycleLen = Math.min(45, Math.max(18, parseInt(document.getElementById('setCycleLen').value,10) || state.settings.defaultCycleLength));
@@ -2280,10 +2529,11 @@
     try{
       const data = await apiPost({ action:'saveSettings', settings });
       state.settings = data.settings;
-      settingsOverlay.classList.remove('active');
+      closeSheet(settingsOverlay);
       renderAll();
+      showToast('Settings saved', 'success');
     }catch(err){
-      alert("Couldn't save that to your sheet — check your connection and try again.");
+      showToast("Couldn't save to your sheet — check your connection.", 'error');
     }finally{
       setBtnLoading(btn, false);
     }
@@ -2330,6 +2580,7 @@
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    showToast('Reminders downloaded', 'success');
   });
 
   document.getElementById('printBtn').addEventListener('click', () => {
@@ -2375,6 +2626,7 @@
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    showToast('Backup downloaded', 'success');
   });
 
   const importFileInput = document.getElementById('importFileInput');
@@ -2394,10 +2646,11 @@
         const data = await apiPost({ action:'importAll', logs: parsed.logs, settings: parsed.settings });
         state.logs = data.logs;
         state.settings = data.settings;
-        settingsOverlay.classList.remove('active');
+        closeSheet(settingsOverlay);
         renderAll();
+        showToast('Backup imported', 'success');
       }catch(e){
-        alert("Couldn't import that file — check it's a Bloom backup and that you're online.");
+        showToast("Couldn't import — check it's a Bloom backup and that you're online.", 'error');
       }finally{
         setBtnLoading(importBtn, false);
         importFileInput.value = '';
@@ -2407,10 +2660,10 @@
   });
 
   document.getElementById('openResetBtn').addEventListener('click', () => {
-    settingsOverlay.classList.remove('active');
+    closeSheet(settingsOverlay);
     resetOverlay.classList.add('active');
   });
-  document.getElementById('resetCancelBtn').addEventListener('click', () => resetOverlay.classList.remove('active'));
+  document.getElementById('resetCancelBtn').addEventListener('click', () => closeSheet(resetOverlay));
   document.getElementById('resetConfirmBtn').addEventListener('click', async () => {
     const btn = document.getElementById('resetConfirmBtn');
     setBtnLoading(btn, true, 'Resetting…');
@@ -2418,14 +2671,14 @@
       await apiPost({ action:'resetAll' });
       state.logs = {};
       state.settings = { onboarded:false, defaultCycleLength:28, defaultPeriodLength:5 };
-      resetOverlay.classList.remove('active');
+      closeSheet(resetOverlay);
       document.getElementById('onbLastPeriod').value = todayStr();
       document.getElementById('onbLastPeriodEnd').value = todayStr();
       document.getElementById('onbCycleLen').value = 28;
       document.getElementById('onbPeriodLen').value = 5;
       onboardOverlay.classList.add('active');
     }catch(err){
-      alert("Couldn't reach your sheet — check your connection and try again. Nothing was deleted.");
+      showToast("Couldn't reach your sheet — nothing was deleted.", 'error');
     }finally{
       setBtnLoading(btn, false);
     }
@@ -2433,7 +2686,7 @@
 
   /* Tap outside a sheet to dismiss it (not onboarding — that one's required) */
   [dayOverlay, settingsOverlay, resetOverlay, assistantOverlay].forEach(ov => {
-    ov.addEventListener('click', (e) => { if(e.target === ov) ov.classList.remove('active'); });
+    ov.addEventListener('click', (e) => { if(e.target === ov) closeSheet(ov); });
   });
 
   /* ---------------- init ---------------- */
