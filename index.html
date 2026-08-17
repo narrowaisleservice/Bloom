@@ -6,6 +6,7 @@
 <title>Bloom — Cycle Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,340..600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
   :root{
     --plum-950:#241220;
@@ -286,6 +287,28 @@
     font-size:13.5px;
     line-height:1.5;
     color:var(--ink-800);
+  }
+  .tip-checkin-label{
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--ink-800);
+    margin-top:16px;
+    margin-bottom:9px;
+  }
+  .tip-chip{
+    padding:7px 12px;
+    font-size:12.5px;
+  }
+  .tip-more-btn{
+    display:block;
+    margin-top:13px;
+    background:none;
+    border:none;
+    padding:0;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--rose-500);
+    cursor:pointer;
   }
 
   /* ---------- Section titles ---------- */
@@ -814,6 +837,7 @@
   .chip.flow-medium.selected{background:var(--rose-500); border-color:var(--rose-500);}
   .chip.flow-heavy.selected{background:#9C3A50; border-color:#9C3A50;}
   .chip.opk-peak.selected{background:var(--gold-400); border-color:var(--gold-400); color:var(--plum-950);}
+  .chip:disabled{ opacity:0.55; cursor:default; }
   textarea{
     width:100%;
     border:1.5px solid var(--line);
@@ -919,6 +943,77 @@
     border-radius:50%;
     animation:spin .8s linear infinite;
   }
+  #authScreen{
+    position:fixed; inset:0;
+    background:var(--plum-950);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    z-index:100;
+    color:var(--cream-100);
+    padding:0 30px;
+    text-align:center;
+  }
+  #authTitle{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:22px;
+    color:var(--cream-50);
+    margin-bottom:6px;
+  }
+  #authSub{
+    font-size:13px;
+    color:var(--cream-100);
+    opacity:0.75;
+    line-height:1.5;
+    margin-bottom:24px;
+    max-width:280px;
+  }
+  #authForm{
+    width:100%;
+    max-width:300px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  #authForm input{
+    width:100%;
+    border:1.5px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.06);
+    border-radius:12px;
+    padding:13px 14px;
+    font-family:'Inter',sans-serif;
+    font-size:14.5px;
+    color:var(--cream-50);
+  }
+  #authForm input::placeholder{ color:rgba(251,243,236,0.45); }
+  #authForm input:focus{ outline:2px solid var(--gold-400); outline-offset:1px; }
+  #authSubmitBtn{
+    border:none;
+    background:var(--grad-hero);
+    color:#fff;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14.5px;
+    padding:13px;
+    border-radius:12px;
+    cursor:pointer;
+    margin-top:6px;
+  }
+  #authToggleModeBtn{
+    background:none;
+    border:none;
+    color:var(--rose-300);
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+    padding:8px;
+  }
+  #authError{
+    font-size:12.5px;
+    color:#E39A9A;
+    min-height:1px;
+    line-height:1.4;
+  }
   .btn-spinner{
     display:inline-block;
     width:13px;height:13px;
@@ -967,6 +1062,30 @@
   <div class="loading-spinner" id="loadingSpinner"></div>
   <div id="loadingText">Blooming…</div>
   <button id="loadingRetryBtn">Try again</button>
+</div>
+
+<div id="authScreen" style="display:none;">
+  <svg class="brand-mark" viewBox="0 0 24 24" fill="none" style="width:34px;height:34px;margin-bottom:6px;">
+    <defs><linearGradient id="authBrandGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#E3AEB9"/><stop offset="100%" stop-color="#D9A55C"/></linearGradient></defs>
+    <g fill="url(#authBrandGrad)">
+      <ellipse cx="12" cy="6.5" rx="3.6" ry="5"/>
+      <ellipse cx="12" cy="6.5" rx="3.6" ry="5" transform="rotate(72 12 12)"/>
+      <ellipse cx="12" cy="6.5" rx="3.6" ry="5" transform="rotate(144 12 12)"/>
+      <ellipse cx="12" cy="6.5" rx="3.6" ry="5" transform="rotate(216 12 12)"/>
+      <ellipse cx="12" cy="6.5" rx="3.6" ry="5" transform="rotate(288 12 12)"/>
+    </g>
+    <circle cx="12" cy="12" r="2.6" fill="#FBF3EC"/>
+  </svg>
+  <div id="authTitle">Welcome to Bloom</div>
+  <div id="authSub">Sign in to keep your data private, just between you two.</div>
+
+  <div id="authForm">
+    <input type="email" id="authEmail" placeholder="Email" autocomplete="email">
+    <input type="password" id="authPassword" placeholder="Password" autocomplete="current-password">
+    <div id="authError"></div>
+    <button id="authSubmitBtn">Log in</button>
+    <button id="authToggleModeBtn" type="button">New here? Create an account</button>
+  </div>
 </div>
 
 <div class="toast-stack" id="toastStack"></div>
@@ -1035,6 +1154,9 @@
       <div class="card tip-card" id="tipCard" style="display:none;">
         <div class="tip-label" id="tipLabel"></div>
         <div class="tip-text" id="tipText"></div>
+        <div class="tip-checkin-label" id="tipCheckinLabel"></div>
+        <div class="chip-group" id="tipQuickChips"></div>
+        <button class="tip-more-btn" id="tipMoreBtn" type="button">Log more for today →</button>
       </div>
     </div>
 
@@ -1311,8 +1433,13 @@
       <button class="btn btn-ghost" id="exportBtn" style="flex:1;">Export snapshot</button>
       <button class="btn btn-ghost" id="importBtn" style="flex:1;">Import backup</button>
     </div>
-    <div class="settings-section-note">Everything's saved to your Google Sheet, so it's already safe across devices. Export gives you a local copy too; import replaces your sheet's data with a backup file.</div>
+    <div class="settings-section-note">Everything's saved to your private Bloom account, so it's already safe across devices. Export gives you a local copy too; import replaces your account's data with a backup file.</div>
     <input type="file" id="importFileInput" accept="application/json" style="display:none;">
+
+    <div class="field-label">Account</div>
+    <div class="settings-row">
+      <button class="btn btn-ghost" id="logoutBtn" style="flex:1;">Log out</button>
+    </div>
 
     <div class="field-label">Share with a partner</div>
     <div class="settings-row">
@@ -1381,10 +1508,14 @@
   function fmtLong(d){ return d.toLocaleDateString('en-GB',{weekday:'long', day:'numeric', month:'long'}); }
   function fmtShort(d){ return d.toLocaleDateString('en-GB',{day:'numeric', month:'short', year:'numeric'}); }
 
-  /* ---------------- backend (Google Sheets via Apps Script) ----------------
-     Paste your deployed web app URL below. See bloom-backend.gs for the
-     matching Apps Script code and deployment steps. */
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWUwMDVu4Ceqvfj-jhAYeQyKGG7lwnRtfjWp4DEw4wChQ36sSSuwfQt1daj3QrtODEvA/exec';
+  /* ---------------- backend (Supabase) ----------------
+     Bloom's data lives in its own "bloom" schema in the shared Narrow Aisle
+     Supabase project — isolated by RLS so only a signed-in Bloom account
+     (Supabase Auth) can read or write it, no anon access at all. */
+  const SUPABASE_URL = 'https://dontubctlexlvifwhmbj.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_99HLzSv4wMwFZHlR81yIsQ_z0A0Jpth';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const db = supabase.schema('bloom');
 
   let pendingSyncs = 0;
   function syncStart(){
@@ -1395,21 +1526,134 @@
     pendingSyncs = Math.max(0, pendingSyncs - 1);
     if(pendingSyncs === 0) document.getElementById('syncIndicator').classList.remove('active');
   }
-  async function apiLoad(){
-    const res = await fetch(SCRIPT_URL, { method:'GET' });
-    if(!res.ok) throw new Error('Request failed');
-    return res.json();
+
+  // Row <-> frontend entry shape. mood/symptoms/exercise are native Postgres
+  // text[] columns, so supabase-js hands back real arrays — no more
+  // comma-join/split like the old Sheets version needed.
+  function rowToEntry(row){
+    return {
+      period: !!row.period,
+      flow: row.flow || null,
+      mood: row.mood || [],
+      symptoms: row.symptoms || [],
+      intimacy: row.intimacy || null,
+      notes: row.notes || '',
+      bbt: row.bbt === null || row.bbt === undefined ? null : Number(row.bbt),
+      weight: row.weight === null || row.weight === undefined ? null : Number(row.weight),
+      discharge: row.discharge || null,
+      opk: row.opk || null,
+      sleep: row.sleep === null || row.sleep === undefined ? null : Number(row.sleep),
+      water: row.water === null || row.water === undefined ? null : Number(row.water),
+      exercise: row.exercise || []
+    };
   }
+  function entryToRow(ds, entry){
+    return {
+      log_date: ds,
+      period: !!entry.period,
+      flow: entry.flow || null,
+      mood: entry.mood || [],
+      symptoms: entry.symptoms || [],
+      intimacy: entry.intimacy || null,
+      notes: entry.notes || '',
+      bbt: entry.bbt === undefined ? null : entry.bbt,
+      weight: entry.weight === undefined ? null : entry.weight,
+      discharge: entry.discharge || null,
+      opk: entry.opk || null,
+      sleep: entry.sleep === undefined ? null : entry.sleep,
+      water: entry.water === undefined ? null : entry.water,
+      exercise: entry.exercise || []
+    };
+  }
+
+  async function apiLoad(){
+    const [logsRes, settingsRes] = await Promise.all([
+      db.from('logs').select('*'),
+      db.from('settings').select('*').eq('id', 1).single()
+    ]);
+    if(logsRes.error) throw logsRes.error;
+    if(settingsRes.error) throw settingsRes.error;
+    const logs = {};
+    (logsRes.data || []).forEach(row => { logs[row.log_date] = rowToEntry(row); });
+    const s = settingsRes.data;
+    const settings = {
+      onboarded: !!s.onboarded,
+      defaultCycleLength: s.avg_cycle_length,
+      defaultPeriodLength: s.avg_period_length,
+      lastPeriodStart: s.last_period_start || undefined
+    };
+    return { logs, settings };
+  }
+
   async function apiPost(payload){
     syncStart();
     try{
-      const res = await fetch(SCRIPT_URL, {
-        method:'POST',
-        headers:{ 'Content-Type':'text/plain;charset=utf-8' }, // avoids a CORS preflight against Apps Script
-        body: JSON.stringify(payload)
-      });
-      if(!res.ok) throw new Error('Request failed');
-      return await res.json();
+      switch(payload.action){
+        case 'saveLog': {
+          const { error } = await db.from('logs').upsert(entryToRow(payload.date, payload.entry), { onConflict:'log_date' });
+          if(error) throw error;
+          return {};
+        }
+        case 'deleteLog': {
+          const { error } = await db.from('logs').delete().eq('log_date', payload.date);
+          if(error) throw error;
+          return {};
+        }
+        case 'saveSettings': {
+          const s = payload.settings;
+          const { error } = await db.from('settings').update({
+            avg_cycle_length: s.defaultCycleLength,
+            avg_period_length: s.defaultPeriodLength
+          }).eq('id', 1);
+          if(error) throw error;
+          return { settings: s };
+        }
+        case 'onboard': {
+          const rows = Object.entries(payload.logs).map(([ds, e]) => entryToRow(ds, e));
+          if(rows.length){
+            const { error } = await db.from('logs').upsert(rows, { onConflict:'log_date' });
+            if(error) throw error;
+          }
+          const s = payload.settings;
+          const { error: sErr } = await db.from('settings').update({
+            onboarded: true,
+            avg_cycle_length: s.defaultCycleLength,
+            avg_period_length: s.defaultPeriodLength,
+            last_period_start: s.lastPeriodStart || null
+          }).eq('id', 1);
+          if(sErr) throw sErr;
+          return await apiLoad();
+        }
+        case 'importAll': {
+          const { error: delErr } = await db.from('logs').delete().not('log_date', 'is', null);
+          if(delErr) throw delErr;
+          const rows = Object.entries(payload.logs).map(([ds, e]) => entryToRow(ds, e));
+          if(rows.length){
+            const { error } = await db.from('logs').insert(rows);
+            if(error) throw error;
+          }
+          const s = payload.settings;
+          const { error: sErr } = await db.from('settings').update({
+            onboarded: !!s.onboarded,
+            avg_cycle_length: s.defaultCycleLength,
+            avg_period_length: s.defaultPeriodLength,
+            last_period_start: s.lastPeriodStart || null
+          }).eq('id', 1);
+          if(sErr) throw sErr;
+          return await apiLoad();
+        }
+        case 'resetAll': {
+          const { error: delErr } = await db.from('logs').delete().not('log_date', 'is', null);
+          if(delErr) throw delErr;
+          const { error: sErr } = await db.from('settings').update({
+            onboarded:false, avg_cycle_length:28, avg_period_length:5, last_period_start:null
+          }).eq('id', 1);
+          if(sErr) throw sErr;
+          return {};
+        }
+        default:
+          throw new Error('Unknown action: ' + payload.action);
+      }
     } finally {
       syncEnd();
     }
@@ -1985,6 +2229,59 @@
       "Cravings can pick up in the back half of this phase — planning a satisfying snack ahead of time can help."
     ]
   };
+
+  // Quick check-in chips shown on the Today tip card. Personal items (from her
+  // own logged history for this phase) are preferred; generic defaults fill in
+  // any remaining slots for a new phase or a low-data account.
+  const MOOD_LIST = ['Calm','Happy','Energetic','Tired','Irritable','Anxious','Sad','High sex drive','Low sex drive'];
+  const SYMPTOM_LIST = ['Cramps','Headache','Bloating','Tender breasts','Backache','Nausea','Acne','Cravings'];
+  const QUICK_CHECK_DEFAULTS = {
+    period: ['Cramps','Bloating','Tired','Backache'],
+    follicular: ['Energetic','Happy','Headache','Calm'],
+    fertile: ['High sex drive','Energetic','Headache','Happy'],
+    ovulation: ['Cramps','High sex drive','Energetic','Headache'],
+    luteal: ['Irritable','Cravings','Tender breasts','Tired']
+  };
+  function quickCheckItems(phase){
+    const { buckets, dayCounts } = computePhasePatterns();
+    const total = dayCounts[phase] || 0;
+    const personal = total >= 3
+      ? Object.entries(buckets[phase] || {}).sort((a,b) => b[1]-a[1]).map(([k]) => k)
+      : [];
+    const merged = personal.slice(0,4);
+    (QUICK_CHECK_DEFAULTS[phase] || QUICK_CHECK_DEFAULTS.follicular).forEach(v => {
+      if(merged.length < 4 && !merged.includes(v)) merged.push(v);
+    });
+    return merged;
+  }
+
+  async function quickToggle(type, val, chipEl){
+    const ds = todayStr();
+    const existing = state.logs[ds] || { period:false, flow:null, mood:[], symptoms:[], discharge:null, opk:null, intimacy:null, bbt:null, weight:null, sleep:null, water:null, exercise:[], notes:'' };
+    const listKey = type === 'mood' ? 'mood' : 'symptoms';
+    const list = (existing[listKey] || []).slice();
+    const idx = list.indexOf(val);
+    const adding = idx === -1;
+    if(adding) list.push(val); else list.splice(idx,1);
+    const entry = { ...existing, [listKey]: list };
+    const isEmpty = !entry.period && (entry.mood||[]).length===0 && (entry.symptoms||[]).length===0 && !entry.discharge && !entry.opk && !entry.intimacy
+      && entry.bbt===null && entry.weight===null && entry.sleep===null && entry.water===null && (entry.exercise||[]).length===0 && !entry.notes;
+
+    chipEl.classList.toggle('selected');
+    chipEl.disabled = true;
+    try{
+      await apiPost(isEmpty ? { action:'deleteLog', date: ds } : { action:'saveLog', date: ds, entry });
+      if(isEmpty) delete state.logs[ds]; else state.logs[ds] = entry;
+      showToast(adding ? `Logged ${val.toLowerCase()}` : `Removed ${val.toLowerCase()}`, 'success');
+      renderAll();
+    }catch(err){
+      chipEl.classList.toggle('selected');
+      showToast("Couldn't save — check your connection.", 'error');
+    }finally{
+      chipEl.disabled = false;
+    }
+  }
+
   function renderTip(c){
     const phase = c.inCurrentPeriod ? 'period'
       : c.isOvulationDay ? 'ovulation'
@@ -1995,6 +2292,24 @@
     const tip = tips[dayOfYear % tips.length];
     document.getElementById('tipLabel').textContent = PHASE_NAME[phase] || 'Today';
     document.getElementById('tipText').textContent = tip;
+
+    const ds = todayStr();
+    const entry = state.logs[ds];
+    document.getElementById('tipCheckinLabel').textContent = entry ? 'Anything changed since this morning?' : 'How are you feeling today?';
+
+    const chipsBox = document.getElementById('tipQuickChips');
+    chipsBox.innerHTML = '';
+    quickCheckItems(phase).forEach(val => {
+      const type = MOOD_LIST.includes(val) ? 'mood' : 'symptom';
+      const list = entry ? (type === 'mood' ? entry.mood : entry.symptoms) || [] : [];
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'chip tip-chip' + (list.includes(val) ? ' selected' : '');
+      chip.textContent = val;
+      chip.addEventListener('click', () => quickToggle(type, val, chip));
+      chipsBox.appendChild(chip);
+    });
+
     document.getElementById('tipCard').style.display = 'block';
   }
 
@@ -2007,6 +2322,8 @@
     renderStreak();
     renderTip(c);
   }
+
+  document.getElementById('tipMoreBtn').addEventListener('click', () => openDayEditor(todayStr()));
 
   /* ---------------- tabs ---------------- */
   document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -2699,17 +3016,24 @@
     }catch(err){ /* stay on current local state if this also fails */ }
   }
 
-  async function init(){
+  async function loadApp(){
+    const loadingScreen = document.getElementById('loadingScreen');
     const loadingText = document.getElementById('loadingText');
     const retryBtn = document.getElementById('loadingRetryBtn');
     const spinner = document.getElementById('loadingSpinner');
+
+    document.getElementById('authScreen').style.display = 'none';
+    spinner.style.display = 'block';
+    loadingText.textContent = 'Blooming…';
+    retryBtn.style.display = 'none';
+    loadingScreen.style.display = 'flex';
 
     try{
       const data = await apiLoad();
       state.logs = data.logs;
       state.settings = data.settings;
 
-      document.getElementById('loadingScreen').style.display = 'none';
+      loadingScreen.style.display = 'none';
       document.getElementById('app').style.display = 'flex';
 
       if(!state.settings.onboarded){
@@ -2719,18 +3043,88 @@
       }
     }catch(err){
       spinner.style.display = 'none';
-      loadingText.textContent = "Couldn't connect to your sheet. Check your connection, or make sure the web app URL in the code is correct.";
+      loadingText.textContent = "Couldn't load your data. Check your connection and try again.";
       retryBtn.style.display = 'inline-block';
-      retryBtn.onclick = () => {
-        spinner.style.display = 'block';
-        loadingText.textContent = 'Blooming…';
-        retryBtn.style.display = 'none';
-        init();
-      };
+      retryBtn.onclick = () => loadApp();
     }
   }
 
-  init();
+  /* ---------------- auth gate ---------------- */
+  let authMode = 'login';
+  const authEmail = document.getElementById('authEmail');
+  const authPassword = document.getElementById('authPassword');
+  const authError = document.getElementById('authError');
+  const authSubmitBtn = document.getElementById('authSubmitBtn');
+
+  function setAuthMode(mode){
+    authMode = mode;
+    authError.textContent = '';
+    delete authSubmitBtn.dataset.origHtml;
+    if(mode === 'signup'){
+      document.getElementById('authTitle').textContent = 'Create your account';
+      document.getElementById('authSub').textContent = "Set a password to keep your data private, just between you two.";
+      authSubmitBtn.textContent = 'Create account';
+      document.getElementById('authToggleModeBtn').textContent = 'Already have an account? Log in';
+    } else {
+      document.getElementById('authTitle').textContent = 'Welcome to Bloom';
+      document.getElementById('authSub').textContent = 'Sign in to keep your data private, just between you two.';
+      authSubmitBtn.textContent = 'Log in';
+      document.getElementById('authToggleModeBtn').textContent = 'New here? Create an account';
+    }
+  }
+
+  document.getElementById('authToggleModeBtn').addEventListener('click', () => {
+    setAuthMode(authMode === 'login' ? 'signup' : 'login');
+  });
+
+  async function handleAuthSubmit(){
+    const email = authEmail.value.trim();
+    const password = authPassword.value;
+    authError.textContent = '';
+    if(!email || !password){
+      authError.textContent = 'Enter an email and password.';
+      return;
+    }
+    setBtnLoading(authSubmitBtn, true, authMode === 'signup' ? 'Creating…' : 'Signing in…');
+    try{
+      const { data, error } = authMode === 'signup'
+        ? await supabase.auth.signUp({ email, password })
+        : await supabase.auth.signInWithPassword({ email, password });
+      if(error) throw error;
+      if(authMode === 'signup' && !data.session){
+        authError.style.color = 'var(--sage-300)';
+        authError.textContent = 'Check your email to confirm your account, then log in.';
+        setAuthMode('login');
+        return;
+      }
+      authPassword.value = '';
+      await loadApp();
+    }catch(err){
+      authError.style.color = '#E39A9A';
+      authError.textContent = err.message || 'Something went wrong.';
+    }finally{
+      setBtnLoading(authSubmitBtn, false);
+    }
+  }
+  authSubmitBtn.addEventListener('click', handleAuthSubmit);
+  authPassword.addEventListener('keydown', (e) => { if(e.key === 'Enter') handleAuthSubmit(); });
+
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    location.reload();
+  });
+
+  async function boot(){
+    const { data: { session } } = await supabase.auth.getSession();
+    document.getElementById('loadingScreen').style.display = 'none';
+    if(!session){
+      document.getElementById('authScreen').style.display = 'flex';
+      return;
+    }
+    await loadApp();
+  }
+
+  boot();
 })();
 </script>
 </body>
