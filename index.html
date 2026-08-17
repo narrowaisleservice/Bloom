@@ -306,6 +306,92 @@
     color:var(--rose-500);
     cursor:pointer;
   }
+  .energy-chip{
+    min-width:42px;
+    text-align:center;
+    padding:9px 0;
+  }
+
+  /* ---------- Wellness suggestions + habit checklist ---------- */
+  .wellness-card{ padding:18px 20px; }
+  .wellness-row{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    margin-bottom:14px;
+  }
+  .wellness-row:last-of-type{ margin-bottom:0; }
+  .wellness-icon{ font-size:20px; line-height:1.3; flex-shrink:0; }
+  .wellness-label{
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+    color:var(--rose-500);
+    margin-bottom:3px;
+  }
+  .wellness-text{
+    font-size:13.5px;
+    line-height:1.5;
+    color:var(--ink-800);
+  }
+  .habit-card{ padding:16px 20px; }
+  .habit-title{
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+    color:var(--ink-500);
+    margin-bottom:12px;
+  }
+  .habit-row{ display:flex; gap:10px; }
+  .habit-item{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-500);
+    background:var(--cream-100);
+    border:none;
+    border-radius:12px;
+    padding:10px 6px;
+    font-family:'Inter',sans-serif;
+  }
+  .habit-item-btn{ cursor:pointer; }
+  .habit-item.habit-done{ background:var(--sage-300); color:#33512c; }
+  .habit-check{ font-size:13px; }
+
+  /* ---------- Breathing exercise ---------- */
+  .breathe-wrap{
+    position:relative;
+    width:180px; height:180px;
+    margin:26px auto 8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .breathe-circle{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    background:var(--grad-hero);
+    opacity:0.85;
+    transform:scale(0.55);
+    transition:transform 4s ease-in-out, opacity 4s ease-in-out;
+  }
+  .breathe-circle.breathe-in{ transform:scale(1); opacity:1; }
+  .breathe-circle.breathe-out{ transform:scale(0.55); opacity:0.85; }
+  .breathe-word{
+    position:relative;
+    z-index:1;
+    color:#fff;
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    font-size:17px;
+  }
 
   /* ---------- Section titles ---------- */
   .section-title{
@@ -1158,6 +1244,39 @@
         <div class="tip-fact" id="tipFact"></div>
         <button class="tip-more-btn" id="tipMoreBtn" type="button">Log more for today →</button>
       </div>
+
+      <div class="card wellness-card" id="wellnessCard" style="display:none;">
+        <div class="wellness-row">
+          <span class="wellness-icon">🏃</span>
+          <div>
+            <div class="wellness-label">Movement idea</div>
+            <div class="wellness-text" id="movementSuggestion"></div>
+          </div>
+        </div>
+        <div class="wellness-row">
+          <span class="wellness-icon" id="foodIcon">🍽️</span>
+          <div>
+            <div class="wellness-label" id="foodLabel">Food idea</div>
+            <div class="wellness-text" id="foodSuggestion"></div>
+          </div>
+        </div>
+        <button class="tip-more-btn" id="breatheBtn" type="button">🌬️ Take a minute to breathe →</button>
+      </div>
+
+      <div class="card habit-card" id="habitCard" style="display:none;">
+        <div class="habit-title">Today's habits</div>
+        <div class="habit-row">
+          <div class="habit-item" id="habitWater">
+            <span class="habit-check">○</span> Water
+          </div>
+          <div class="habit-item" id="habitMovement">
+            <span class="habit-check">○</span> Moved
+          </div>
+          <button class="habit-item habit-item-btn" id="habitSupplement" type="button">
+            <span class="habit-check">○</span> Supplement
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- CALENDAR VIEW -->
@@ -1204,6 +1323,7 @@
       <div class="card" id="bbtCard" style="display:none;"></div>
       <div class="card" id="weightCard" style="display:none;"></div>
       <div class="card" id="sleepCard" style="display:none;"></div>
+      <div class="card" id="energyCard" style="display:none;"></div>
       <div class="card" id="activityCard" style="display:none;"></div>
 
       <div class="foot-note">Predictions are estimates based on your own logged history, not medical advice.</div>
@@ -1267,6 +1387,15 @@
       <button class="chip" data-mood="Low sex drive">Low sex drive</button>
     </div>
 
+    <div class="field-label">Energy</div>
+    <div class="chip-group" id="energyChips">
+      <button class="chip energy-chip" data-energy="1">1</button>
+      <button class="chip energy-chip" data-energy="2">2</button>
+      <button class="chip energy-chip" data-energy="3">3</button>
+      <button class="chip energy-chip" data-energy="4">4</button>
+      <button class="chip energy-chip" data-energy="5">5</button>
+    </div>
+
     <div class="field-label">Symptoms</div>
     <div class="chip-group" id="symptomChips">
       <button class="chip" data-symptom="Cramps">Cramps</button>
@@ -1277,6 +1406,8 @@
       <button class="chip" data-symptom="Nausea">Nausea</button>
       <button class="chip" data-symptom="Acne">Acne</button>
       <button class="chip" data-symptom="Cravings">Cravings</button>
+      <button class="chip" data-symptom="Skin changes">Skin changes</button>
+      <button class="chip" data-symptom="Hair changes">Hair changes</button>
     </div>
 
     <div class="field-label">Discharge</div>
@@ -1339,6 +1470,11 @@
       <button class="chip" data-exercise="Rest day">Rest day</button>
     </div>
 
+    <div class="toggle-row" style="margin-top:18px;">
+      <span>Took supplement/vitamin</span>
+      <button class="switch" id="supplementSwitch"></button>
+    </div>
+
     <div class="field-label">Notes</div>
     <textarea id="notesInput" placeholder="Anything else worth remembering…"></textarea>
 
@@ -1398,6 +1534,28 @@
 
     <div class="sheet-actions">
       <button class="btn btn-ghost" id="assistantCloseBtn" style="flex:1;">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- BREATHE / MINDFULNESS SHEET -->
+<div class="overlay" id="breatheOverlay">
+  <div class="sheet" style="text-align:center;">
+    <button class="sheet-close-btn" id="breatheXBtn" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Take a minute</div>
+    <div class="sheet-sub" id="affirmationText"></div>
+
+    <div class="breathe-wrap">
+      <div class="breathe-circle" id="breatheCircle"></div>
+      <div class="breathe-word" id="breatheWord">Ready?</div>
+    </div>
+
+    <div class="sheet-actions">
+      <button class="btn btn-primary" id="breatheStartBtn" style="flex:1;">Start</button>
+      <button class="btn btn-ghost" id="breatheDoneBtn" style="flex:1;">Done</button>
     </div>
   </div>
 </div>
@@ -1544,7 +1702,9 @@
       opk: row.opk || null,
       sleep: row.sleep === null || row.sleep === undefined ? null : Number(row.sleep),
       water: row.water === null || row.water === undefined ? null : Number(row.water),
-      exercise: row.exercise || []
+      exercise: row.exercise || [],
+      energy: row.energy === null || row.energy === undefined ? null : Number(row.energy),
+      supplement: !!row.supplement
     };
   }
   function entryToRow(ds, entry){
@@ -1562,7 +1722,9 @@
       opk: entry.opk || null,
       sleep: entry.sleep === undefined ? null : entry.sleep,
       water: entry.water === undefined ? null : entry.water,
-      exercise: entry.exercise || []
+      exercise: entry.exercise || [],
+      energy: entry.energy === undefined ? null : entry.energy,
+      supplement: !!entry.supplement
     };
   }
 
@@ -2156,7 +2318,7 @@
       weightCard.style.display = 'block';
       const chart = lineChartSVG(weightEntries.map(e=>e.v), { color:'#3D2145' });
       const last = weightEntries[weightEntries.length-1];
-      weightCard.innerHTML = `<div class="section-title" style="color:var(--ink-800);margin:0 0 8px;font-size:15px;">Weight</div>${chart}<div class="chart-caption">Latest: ${last.v}kg on ${fmtShort(fromStr(last.d))}.</div>`;
+      weightCard.innerHTML = `<div class="section-title" style="color:var(--ink-800);margin:0 0 8px;font-size:15px;">Weight</div>${chart}<div class="chart-caption">Latest: ${last.v}kg on ${fmtShort(fromStr(last.d))}. Weight often shifts a pound or two through the luteal phase from water retention — worth watching the trend over weeks rather than day to day.</div>`;
     } else {
       weightCard.style.display = 'none';
     }
@@ -2175,12 +2337,27 @@
       sleepCard.style.display = 'none';
     }
 
+    const energyEntries = Object.keys(state.logs).sort()
+      .map(d => ({ d, v: state.logs[d].energy }))
+      .filter(e => e.v !== null && e.v !== undefined)
+      .slice(-30);
+    const energyCard = document.getElementById('energyCard');
+    if(energyEntries.length >= 2){
+      energyCard.style.display = 'block';
+      const chart = lineChartSVG(energyEntries.map(e=>e.v), { color:'#C1546B' });
+      const avg = (energyEntries.reduce((a,e)=>a+e.v,0) / energyEntries.length).toFixed(1);
+      energyCard.innerHTML = `<div class="section-title" style="color:var(--ink-800);margin:0 0 8px;font-size:15px;">Energy</div>${chart}<div class="chart-caption">Averaging ${avg}/5 over your last ${energyEntries.length} logged days.</div>`;
+    } else {
+      energyCard.style.display = 'none';
+    }
+
     const waterEntries = Object.values(state.logs).map(e=>e.water).filter(v => v !== null && v !== undefined);
     const exerciseCounts = {};
     Object.values(state.logs).forEach(e => (e.exercise||[]).forEach(x => exerciseCounts[x] = (exerciseCounts[x]||0)+1));
     const exerciseList = Object.entries(exerciseCounts).sort((a,b)=>b[1]-a[1]);
+    const supplementDays = Object.values(state.logs).filter(e => e.supplement).length;
     const activityCard = document.getElementById('activityCard');
-    if(waterEntries.length || exerciseList.length){
+    if(waterEntries.length || exerciseList.length || supplementDays){
       activityCard.style.display = 'block';
       const waterLine = waterEntries.length
         ? `Averaging ${(waterEntries.reduce((a,v)=>a+v,0)/waterEntries.length).toFixed(1)} glasses of water on days you've logged it.`
@@ -2188,7 +2365,10 @@
       const exLine = exerciseList.length
         ? `Most logged: ${exerciseList.slice(0,3).map(([k,v])=>`${k} (${v}×)`).join(', ')}.`
         : '';
-      activityCard.innerHTML = `<div class="section-title" style="color:var(--ink-800);margin:0 0 8px;font-size:15px;">Activity</div><div class="regularity-note">${[waterLine, exLine].filter(Boolean).join('<br>')}</div>`;
+      const suppLine = supplementDays
+        ? `Supplement taken on ${supplementDays} logged day${supplementDays===1?'':'s'}.`
+        : '';
+      activityCard.innerHTML = `<div class="section-title" style="color:var(--ink-800);margin:0 0 8px;font-size:15px;">Activity</div><div class="regularity-note">${[waterLine, exLine, suppLine].filter(Boolean).join('<br>')}</div>`;
     } else {
       activityCard.style.display = 'none';
     }
@@ -2234,7 +2414,7 @@
   // own logged history for this phase) are preferred; generic defaults fill in
   // any remaining slots for a new phase or a low-data account.
   const MOOD_LIST = ['Calm','Happy','Energetic','Tired','Irritable','Anxious','Sad','High sex drive','Low sex drive'];
-  const SYMPTOM_LIST = ['Cramps','Headache','Bloating','Tender breasts','Backache','Nausea','Acne','Cravings'];
+  const SYMPTOM_LIST = ['Cramps','Headache','Bloating','Tender breasts','Backache','Nausea','Acne','Cravings','Skin changes','Hair changes'];
   const QUICK_CHECK_DEFAULTS = {
     period: ['Cramps','Bloating','Tired','Backache'],
     follicular: ['Energetic','Happy','Headache','Calm'],
@@ -2242,6 +2422,34 @@
     ovulation: ['Cramps','High sex drive','Energetic','Headache'],
     luteal: ['Irritable','Cravings','Tender breasts','Tired']
   };
+
+  // Wellness suggestions for the Today tab — phase-matched movement and food
+  // ideas, framed around energy/symptom support rather than calories or
+  // weight targets. A logged "Cravings" symptom today swaps the food idea
+  // for a same-craving substitute rather than the general phase suggestion.
+  const MOVEMENT_SUGGESTIONS = {
+    period: "Gentle stuff today — a short walk, easy stretching, or full rest if you need it. Intense workouts can wait a day or two.",
+    follicular: "Energy's usually climbing here — a good window for a proper workout: strength training, a run, or a class you've been meaning to try.",
+    fertile: "Good energy for a longer walk, a bike ride, or your usual workout — many people feel strongest right around here.",
+    ovulation: "Strength or a higher-intensity session often feels best today — energy tends to peak right around ovulation.",
+    luteal: "A brisk walk, yoga, or Pilates tends to sit better than high-intensity here as energy starts to dip — no need to push hard."
+  };
+  const FOOD_SUGGESTIONS = {
+    period: "Iron-rich foods help offset what's lost — leafy greens, red meat, or lentils. A warm, comforting meal is genuinely the right call here.",
+    follicular: "Lean protein and colourful veg support the higher activity this phase often brings.",
+    fertile: "Light, energising meals — salads with protein, whole grains — tend to sit well as energy runs high.",
+    ovulation: "Fresh, energising food suits today well. Good hydration matters most.",
+    luteal: "Cravings often ramp up here — magnesium-rich foods (dark chocolate, nuts, leafy greens) can genuinely help, alongside complex carbs to keep blood sugar steadier."
+  };
+  const CRAVING_SWAP = "Craving something sweet? A couple of squares of dark chocolate (70%+), a frozen banana blended smooth with cocoa, or dates with peanut butter tend to hit the same spot with less of a sugar crash.";
+  const AFFIRMATIONS = {
+    period: ["Rest is productive too.", "Be as gentle with yourself as you would with a friend today.", "This phase passes — you've done it before."],
+    follicular: ["Your energy is building — trust it.", "A good day to start something new."],
+    fertile: ["You're capable of more than you think today.", "Confidence tends to run high right now — enjoy it."],
+    ovulation: ["You're at your strongest today.", "Notice how good you feel right now."],
+    luteal: ["Slowing down isn't failing.", "Cravings and moodiness are hormones talking, not a character flaw.", "You're allowed to need more rest this week."]
+  };
+
   function quickCheckItems(phase){
     const { buckets, dayCounts } = computePhasePatterns();
     const total = dayCounts[phase] || 0;
@@ -2255,9 +2463,13 @@
     return merged;
   }
 
+  function emptyEntry(){
+    return { period:false, flow:null, mood:[], symptoms:[], discharge:null, opk:null, intimacy:null, bbt:null, weight:null, sleep:null, water:null, exercise:[], notes:'', energy:null, supplement:false };
+  }
+
   async function quickToggle(type, val, chipEl){
     const ds = todayStr();
-    const existing = state.logs[ds] || { period:false, flow:null, mood:[], symptoms:[], discharge:null, opk:null, intimacy:null, bbt:null, weight:null, sleep:null, water:null, exercise:[], notes:'' };
+    const existing = state.logs[ds] || emptyEntry();
     const listKey = type === 'mood' ? 'mood' : 'symptoms';
     const list = (existing[listKey] || []).slice();
     const idx = list.indexOf(val);
@@ -2265,7 +2477,8 @@
     if(adding) list.push(val); else list.splice(idx,1);
     const entry = { ...existing, [listKey]: list };
     const isEmpty = !entry.period && (entry.mood||[]).length===0 && (entry.symptoms||[]).length===0 && !entry.discharge && !entry.opk && !entry.intimacy
-      && entry.bbt===null && entry.weight===null && entry.sleep===null && entry.water===null && (entry.exercise||[]).length===0 && !entry.notes;
+      && entry.bbt===null && entry.weight===null && entry.sleep===null && entry.water===null && (entry.exercise||[]).length===0 && !entry.notes
+      && entry.energy===null && !entry.supplement;
 
     chipEl.classList.toggle('selected');
     chipEl.disabled = true;
@@ -2279,6 +2492,27 @@
       showToast("Couldn't save — check your connection.", 'error');
     }finally{
       chipEl.disabled = false;
+    }
+  }
+
+  async function quickToggleSupplement(){
+    const ds = todayStr();
+    const existing = state.logs[ds] || emptyEntry();
+    const entry = { ...existing, supplement: !existing.supplement };
+    const isEmpty = !entry.period && (entry.mood||[]).length===0 && (entry.symptoms||[]).length===0 && !entry.discharge && !entry.opk && !entry.intimacy
+      && entry.bbt===null && entry.weight===null && entry.sleep===null && entry.water===null && (entry.exercise||[]).length===0 && !entry.notes
+      && entry.energy===null && !entry.supplement;
+    const btn = document.getElementById('habitSupplement');
+    btn.disabled = true;
+    try{
+      await apiPost(isEmpty ? { action:'deleteLog', date: ds } : { action:'saveLog', date: ds, entry });
+      if(isEmpty) delete state.logs[ds]; else state.logs[ds] = entry;
+      showToast(entry.supplement ? 'Supplement logged' : 'Removed', 'success');
+      renderAll();
+    }catch(err){
+      showToast("Couldn't save — check your connection.", 'error');
+    }finally{
+      btn.disabled = false;
     }
   }
 
@@ -2361,6 +2595,45 @@
     document.getElementById('tipCard').style.display = 'block';
   }
 
+  const WATER_GOAL_GLASSES = 8;
+
+  function renderWellness(c){
+    const phase = c.inCurrentPeriod ? 'period'
+      : c.isOvulationDay ? 'ovulation'
+      : c.inFertileWindow ? 'fertile'
+      : phaseAt(Math.min(c.avgCycleLength, Math.max(1,c.cycleDayIndex)), c);
+    const entry = state.logs[todayStr()];
+    const craving = entry && (entry.symptoms||[]).includes('Cravings');
+
+    document.getElementById('movementSuggestion').textContent = MOVEMENT_SUGGESTIONS[phase] || MOVEMENT_SUGGESTIONS.follicular;
+    document.getElementById('foodIcon').textContent = craving ? '🍫' : '🍽️';
+    document.getElementById('foodLabel').textContent = craving ? 'Craving idea' : 'Food idea';
+    document.getElementById('foodSuggestion').textContent = craving ? CRAVING_SWAP : (FOOD_SUGGESTIONS[phase] || FOOD_SUGGESTIONS.follicular);
+
+    document.getElementById('wellnessCard').style.display = 'block';
+  }
+
+  function renderHabits(c){
+    const entry = state.logs[todayStr()];
+    const waterDone = !!entry && entry.water !== null && entry.water !== undefined && entry.water >= WATER_GOAL_GLASSES;
+    const movedDone = !!entry && (entry.exercise||[]).some(x => x !== 'Rest day');
+    const suppDone = !!entry && !!entry.supplement;
+
+    const waterEl = document.getElementById('habitWater');
+    waterEl.classList.toggle('habit-done', waterDone);
+    waterEl.querySelector('.habit-check').textContent = waterDone ? '●' : '○';
+
+    const movedEl = document.getElementById('habitMovement');
+    movedEl.classList.toggle('habit-done', movedDone);
+    movedEl.querySelector('.habit-check').textContent = movedDone ? '●' : '○';
+
+    const suppEl = document.getElementById('habitSupplement');
+    suppEl.classList.toggle('habit-done', suppDone);
+    suppEl.querySelector('.habit-check').textContent = suppDone ? '●' : '○';
+
+    document.getElementById('habitCard').style.display = 'block';
+  }
+
   function renderAll(){
     const c = computeCycle();
     // Each render step is independent — a problem in one (e.g. a data shape
@@ -2371,7 +2644,9 @@
       () => renderInsights(c),
       () => renderSmartInsight(c),
       () => renderStreak(),
-      () => renderTip(c)
+      () => renderTip(c),
+      () => renderWellness(c),
+      () => renderHabits(c)
     ];
     steps.forEach(step => {
       try{ step(); }catch(err){ console.error('renderAll step failed:', err); }
@@ -2379,6 +2654,7 @@
   }
 
   document.getElementById('tipMoreBtn').addEventListener('click', () => openDayEditor(todayStr()));
+  document.getElementById('habitSupplement').addEventListener('click', () => quickToggleSupplement());
 
   /* ---------------- tabs ---------------- */
   document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -2405,6 +2681,7 @@
   const flowSection = document.getElementById('flowSection');
   const intimacySwitch = document.getElementById('intimacySwitch');
   const intimacySection = document.getElementById('intimacySection');
+  const supplementSwitch = document.getElementById('supplementSwitch');
 
   function openDayEditor(ds){
     state.editingDate = ds;
@@ -2421,12 +2698,13 @@
       phaseInfo.style.display = 'none';
     }
 
-    const entry = state.logs[ds] || { period:false, flow:null, mood:[], symptoms:[], discharge:null, opk:null, intimacy:null, bbt:null, weight:null, sleep:null, water:null, exercise:[], notes:'' };
+    const entry = state.logs[ds] || emptyEntry();
 
     periodSwitch.classList.toggle('on', !!entry.period);
     flowSection.style.display = entry.period ? 'block' : 'none';
     document.querySelectorAll('[data-flow]').forEach(c => c.classList.toggle('selected', c.getAttribute('data-flow')===entry.flow));
     document.querySelectorAll('[data-mood]').forEach(c => c.classList.toggle('selected', (entry.mood||[]).includes(c.getAttribute('data-mood'))));
+    document.querySelectorAll('[data-energy]').forEach(c => c.classList.toggle('selected', Number(c.getAttribute('data-energy'))===entry.energy));
     document.querySelectorAll('[data-symptom]').forEach(c => c.classList.toggle('selected', (entry.symptoms||[]).includes(c.getAttribute('data-symptom'))));
     document.querySelectorAll('[data-discharge]').forEach(c => c.classList.toggle('selected', c.getAttribute('data-discharge')===entry.discharge));
     document.querySelectorAll('[data-opk]').forEach(c => c.classList.toggle('selected', c.getAttribute('data-opk')===entry.opk));
@@ -2438,6 +2716,7 @@
     document.getElementById('sleepInput').value = entry.sleep !== null && entry.sleep !== undefined ? entry.sleep : '';
     document.getElementById('waterInput').value = entry.water !== null && entry.water !== undefined ? entry.water : '';
     document.querySelectorAll('[data-exercise]').forEach(c => c.classList.toggle('selected', (entry.exercise||[]).includes(c.getAttribute('data-exercise'))));
+    supplementSwitch.classList.toggle('on', !!entry.supplement);
     document.getElementById('notesInput').value = entry.notes || '';
 
     document.getElementById('deleteDayBtn').style.display = state.logs[ds] ? 'block' : 'none';
@@ -2480,8 +2759,20 @@
     });
   });
 
+  document.querySelectorAll('[data-energy]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const alreadySelected = chip.classList.contains('selected');
+      document.querySelectorAll('[data-energy]').forEach(c => c.classList.remove('selected'));
+      if(!alreadySelected) chip.classList.add('selected');
+    });
+  });
+
   document.querySelectorAll('[data-exercise]').forEach(chip => {
     chip.addEventListener('click', () => chip.classList.toggle('selected'));
+  });
+
+  supplementSwitch.addEventListener('click', () => {
+    supplementSwitch.classList.toggle('on');
   });
 
   intimacySwitch.addEventListener('click', () => {
@@ -2510,6 +2801,8 @@
     const period = periodSwitch.classList.contains('on');
     const flowChip = document.querySelector('[data-flow].selected');
     const mood = [...document.querySelectorAll('[data-mood].selected')].map(c=>c.getAttribute('data-mood'));
+    const energyChip = document.querySelector('[data-energy].selected');
+    const energy = energyChip ? Number(energyChip.getAttribute('data-energy')) : null;
     const symptoms = [...document.querySelectorAll('[data-symptom].selected')].map(c=>c.getAttribute('data-symptom'));
     const dischargeChip = document.querySelector('[data-discharge].selected');
     const discharge = dischargeChip ? dischargeChip.getAttribute('data-discharge') : null;
@@ -2526,15 +2819,17 @@
     const sleep = sleepRaw === '' ? null : Math.min(16, Math.max(0, parseFloat(sleepRaw)));
     const water = waterRaw === '' ? null : Math.min(20, Math.max(0, parseInt(waterRaw,10)));
     const exercise = [...document.querySelectorAll('[data-exercise].selected')].map(c=>c.getAttribute('data-exercise'));
+    const supplement = supplementSwitch.classList.contains('on');
     const notes = document.getElementById('notesInput').value.trim();
 
     const isEmpty = !period && mood.length===0 && symptoms.length===0 && !discharge && !opk && !intimacyOn
-      && bbt===null && weight===null && sleep===null && water===null && exercise.length===0 && !notes;
+      && bbt===null && weight===null && sleep===null && water===null && exercise.length===0 && !notes
+      && energy===null && !supplement;
     const entry = isEmpty ? null : {
       period, flow: period ? (flowChip ? flowChip.getAttribute('data-flow') : 'Medium') : null,
-      mood, symptoms, discharge, opk,
+      mood, energy, symptoms, discharge, opk,
       intimacy: intimacyOn ? (intimacyChip ? intimacyChip.getAttribute('data-intimacy') : 'Protected') : null,
-      bbt, weight, sleep, water, exercise,
+      bbt, weight, sleep, water, exercise, supplement,
       notes
     };
 
@@ -2546,7 +2841,7 @@
       await apiPost(isEmpty ? { action:'deleteLog', date: ds } : { action:'saveLog', date: ds, entry });
       showToast(isEmpty ? 'Entry cleared' : 'Saved', 'success');
     }catch(err){
-      showToast("Couldn't save to your sheet — check your connection.", 'error');
+      showToast("Couldn't save — check your connection.", 'error');
       await resync();
     }
   });
@@ -2560,7 +2855,7 @@
       await apiPost({ action:'deleteLog', date: ds });
       showToast('Entry deleted', 'success');
     }catch(err){
-      showToast("Couldn't delete from your sheet — check your connection.", 'error');
+      showToast("Couldn't delete — check your connection.", 'error');
       await resync();
     }
   });
@@ -2582,7 +2877,7 @@
     let d = fromStr(lastPeriod);
     const end = fromStr(lastPeriodEnd);
     while(d <= end){
-      logs[toStr(d)] = { period:true, flow:'Medium', mood:[], symptoms:[], discharge:null, opk:null, intimacy:null, bbt:null, weight:null, sleep:null, water:null, exercise:[], notes:'' };
+      logs[toStr(d)] = { ...emptyEntry(), period:true, flow:'Medium' };
       d = addDays(d, 1);
     }
 
@@ -2596,7 +2891,7 @@
       renderAll();
       showToast('Welcome to Bloom 🌸', 'success');
     }catch(err){
-      showToast("Couldn't reach your sheet — check your connection and try again.", 'error');
+      showToast("Couldn't reach your account — check your connection and try again.", 'error');
     }finally{
       setBtnLoading(btn, false);
     }
@@ -2622,7 +2917,9 @@
     'sad': "Low mood in the days before a period is common and usually lifts once bleeding starts. If it's severe or lasts beyond your period, it's worth discussing with a doctor — including screening for PMDD.",
     'spotting': "Light spotting between periods can happen around ovulation for some people, or in the day or two before a period starts. Frequent or heavy spotting outside your period, or spotting alongside pain, is worth mentioning to a doctor.",
     'insomnia': "Trouble sleeping is common in the luteal phase and just before a period, as progesterone and body temperature shift. A cooler room, a wind-down routine, and cutting evening caffeine can help.",
-    'dizzy': "Occasional light-headedness can happen around your period, sometimes linked to blood loss or skipped meals. Staying hydrated and eating regularly usually helps; frequent or severe dizziness is worth checking with a doctor."
+    'dizzy': "Occasional light-headedness can happen around your period, sometimes linked to blood loss or skipped meals. Staying hydrated and eating regularly usually helps; frequent or severe dizziness is worth checking with a doctor.",
+    'skin changes': "Hormonal shifts through the cycle can affect skin beyond just breakouts — some people notice more oiliness in the luteal phase and calmer, clearer skin around ovulation when oestrogen peaks. Tracking it alongside phase can show your own pattern over a few cycles.",
+    'hair changes': "Hair can feel different across the cycle for some people — oestrogen (highest around ovulation) is linked to shinier, fuller-feeling hair, while the drop before a period can make it feel flatter or more prone to shedding. Usually not something to worry about unless shedding is heavy or sudden."
   };
 
   // Alternate phrasings mapped to a canonical SYMPTOM_INFO key.
@@ -2640,7 +2937,9 @@
     'anxiety':'anxious', 'nervous':'anxious', 'on edge':'anxious', 'worried':'anxious',
     'depressed':'sad', 'low mood':'sad', 'feeling down':'sad', 'tearful':'sad', 'crying':'sad',
     "can't sleep":'insomnia', 'cant sleep':'insomnia', 'trouble sleeping':'insomnia', "can't fall asleep":'insomnia',
-    'lightheaded':'dizzy', 'light headed':'dizzy', 'faint':'dizzy'
+    'lightheaded':'dizzy', 'light headed':'dizzy', 'faint':'dizzy',
+    'oily skin':'skin changes', 'dry skin':'skin changes', 'skin breaking out':'skin changes',
+    'hair loss':'hair changes', 'shedding':'hair changes', 'hair shedding':'hair changes', 'greasy hair':'hair changes'
   };
   function findSymptomKey(msg){
     const candidates = [
@@ -2880,6 +3179,50 @@
     }
   });
 
+  /* ---------------- breathe / mindfulness ---------------- */
+  const breatheOverlay = document.getElementById('breatheOverlay');
+  const breatheCircle = document.getElementById('breatheCircle');
+  const breatheWord = document.getElementById('breatheWord');
+  const breatheStartBtn = document.getElementById('breatheStartBtn');
+  let breatheTimer = null;
+  let breatheRunning = false;
+
+  function breatheStep(phaseIn){
+    breatheCircle.classList.toggle('breathe-in', phaseIn);
+    breatheCircle.classList.toggle('breathe-out', !phaseIn);
+    breatheWord.textContent = phaseIn ? 'Breathe in…' : 'Breathe out…';
+  }
+  function startBreathing(){
+    breatheRunning = true;
+    breatheStartBtn.textContent = 'Stop';
+    let phaseIn = true;
+    breatheStep(phaseIn);
+    breatheTimer = setInterval(() => { phaseIn = !phaseIn; breatheStep(phaseIn); }, 4000);
+  }
+  function stopBreathing(){
+    breatheRunning = false;
+    breatheStartBtn.textContent = 'Start';
+    clearInterval(breatheTimer);
+    breatheCircle.classList.remove('breathe-in','breathe-out');
+    breatheWord.textContent = 'Ready?';
+  }
+  document.getElementById('breatheBtn').addEventListener('click', () => {
+    const c = computeCycle();
+    const phase = c.inCurrentPeriod ? 'period'
+      : c.isOvulationDay ? 'ovulation'
+      : c.inFertileWindow ? 'fertile'
+      : phaseAt(Math.min(c.avgCycleLength, Math.max(1,c.cycleDayIndex)), c);
+    const bank = AFFIRMATIONS[phase] || AFFIRMATIONS.follicular;
+    const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+    document.getElementById('affirmationText').textContent = bank[dayOfYear % bank.length];
+    breatheOverlay.classList.add('active');
+  });
+  breatheStartBtn.addEventListener('click', () => { breatheRunning ? stopBreathing() : startBreathing(); });
+  function closeBreathe(){ stopBreathing(); closeSheet(breatheOverlay); }
+  document.getElementById('breatheXBtn').addEventListener('click', closeBreathe);
+  document.getElementById('breatheDoneBtn').addEventListener('click', closeBreathe);
+  breatheOverlay.addEventListener('click', (e) => { if(e.target === breatheOverlay) closeBreathe(); });
+
   /* ---------------- settings / backup / reset ---------------- */
   const settingsOverlay = document.getElementById('settingsOverlay');
   const resetOverlay = document.getElementById('resetOverlay');
@@ -2905,7 +3248,7 @@
       renderAll();
       showToast('Settings saved', 'success');
     }catch(err){
-      showToast("Couldn't save to your sheet — check your connection.", 'error');
+      showToast("Couldn't save — check your connection.", 'error');
     }finally{
       setBtnLoading(btn, false);
     }
@@ -3050,7 +3393,7 @@
       document.getElementById('onbPeriodLen').value = 5;
       onboardOverlay.classList.add('active');
     }catch(err){
-      showToast("Couldn't reach your sheet — nothing was deleted.", 'error');
+      showToast("Couldn't reach your account — nothing was deleted.", 'error');
     }finally{
       setBtnLoading(btn, false);
     }
