@@ -275,25 +275,21 @@
   .tip-card{
     padding:18px 20px;
   }
-  .tip-label{
-    font-size:11px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:0.8px;
-    color:var(--rose-500);
-    margin-bottom:6px;
+  .tip-msg-row{
+    display:flex;
+    align-items:flex-end;
+    gap:8px;
+    margin-bottom:14px;
   }
-  .tip-text{
-    font-size:13.5px;
+  .tip-msg-row .assist-msg{
+    max-width:none;
+    flex:1;
+  }
+  .tip-fact{
+    font-size:12px;
     line-height:1.5;
-    color:var(--ink-800);
-  }
-  .tip-checkin-label{
-    font-size:12.5px;
-    font-weight:700;
-    color:var(--ink-800);
-    margin-top:16px;
-    margin-bottom:9px;
+    color:var(--ink-500);
+    margin-top:13px;
   }
   .tip-chip{
     padding:7px 12px;
@@ -1152,10 +1148,14 @@
       </div>
 
       <div class="card tip-card" id="tipCard" style="display:none;">
-        <div class="tip-label" id="tipLabel"></div>
-        <div class="tip-text" id="tipText"></div>
-        <div class="tip-checkin-label" id="tipCheckinLabel"></div>
+        <div class="tip-msg-row">
+          <div class="assist-avatar assist-avatar-bot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.6 4.9L18.5 9.5 13.6 11.1 12 16l-1.6-4.9L5.5 9.5l4.9-1.6L12 3z"/></svg>
+          </div>
+          <div class="assist-msg assist-msg-bot" id="tipMessage"></div>
+        </div>
         <div class="chip-group" id="tipQuickChips"></div>
+        <div class="tip-fact" id="tipFact"></div>
         <button class="tip-more-btn" id="tipMoreBtn" type="button">Log more for today →</button>
       </div>
     </div>
@@ -2282,6 +2282,55 @@
     }
   }
 
+  // Warm, varied check-in lines — picked deterministically per day (so it
+  // doesn't change on every re-render, but does vary day to day) unless a
+  // strong personal pattern for this phase overrides it with something more
+  // specific. {day} is replaced with the current period day where relevant.
+  const CHECKIN_MESSAGES = {
+    period: {
+      unlogged: [ "Hey — day {day} of your period. How are you feeling today?", "Morning! How's today treating you so far?", "Checking in — cramps behaving, or a rough one today?" ],
+      logged: [ "Anything changed since this morning?", "Still checking in — better, worse, or about the same?", "How's the rest of the day going?" ]
+    },
+    follicular: {
+      unlogged: [ "Morning! Energy picking up at all today?", "Hey — how are you feeling as you head toward your fertile window?", "Checking in — anything worth logging today?" ],
+      logged: [ "Anything new since this morning?", "How's the rest of the day treating you?" ]
+    },
+    fertile: {
+      unlogged: [ "You're in your fertile window — how are you feeling today?", "Hey — anything different today, physically or mood-wise?" ],
+      logged: [ "Anything changed since this morning?", "Still tracking — how's today going?" ]
+    },
+    ovulation: {
+      unlogged: [ "Today's your predicted ovulation day — feeling any twinges?", "Hey — how's ovulation day treating you?" ],
+      logged: [ "Anything new since earlier?", "How's the rest of today going?" ]
+    },
+    luteal: {
+      unlogged: [ "Hey — how's your energy today?", "Checking in — any PMS creeping in yet?", "Morning! Anything worth logging today?" ],
+      logged: [ "Anything changed since this morning?", "Still with me — better or worse than earlier?" ]
+    }
+  };
+
+  function bestPatternForPhase(phase){
+    const { buckets, dayCounts } = computePhasePatterns();
+    const total = dayCounts[phase] || 0;
+    if(total < 3) return null;
+    const entries = Object.entries(buckets[phase] || {}).sort((a,b) => b[1]-a[1]);
+    if(!entries.length || entries[0][1] / total < 0.4) return null;
+    const [item, count] = entries[0];
+    return { item, count, total };
+  }
+
+  function buildCheckinMessage(phase, entry, dayNum){
+    if(!entry){
+      const pattern = bestPatternForPhase(phase);
+      if(pattern) return `You've logged <b>${pattern.item.toLowerCase()}</b> ${pattern.count} of your last ${pattern.total} days here — how about today?`;
+    }
+    const bank = CHECKIN_MESSAGES[phase] || CHECKIN_MESSAGES.follicular;
+    const list = entry ? bank.logged : bank.unlogged;
+    const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+    const msg = list[dayOfYear % list.length];
+    return msg.replace('{day}', dayNum);
+  }
+
   function renderTip(c){
     const phase = c.inCurrentPeriod ? 'period'
       : c.isOvulationDay ? 'ovulation'
@@ -2289,13 +2338,12 @@
       : phaseAt(Math.min(c.avgCycleLength, Math.max(1,c.cycleDayIndex)), c);
     const tips = PHASE_TIPS[phase] || PHASE_TIPS.follicular;
     const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0)) / 86400000);
-    const tip = tips[dayOfYear % tips.length];
-    document.getElementById('tipLabel').textContent = PHASE_NAME[phase] || 'Today';
-    document.getElementById('tipText').textContent = tip;
+    document.getElementById('tipFact').textContent = tips[dayOfYear % tips.length];
 
     const ds = todayStr();
     const entry = state.logs[ds];
-    document.getElementById('tipCheckinLabel').textContent = entry ? 'Anything changed since this morning?' : 'How are you feeling today?';
+    const dayNum = c.inCurrentPeriod && c.lastRun ? daysBetween(c.lastRun.startDate, new Date()) + 1 : c.cycleDayIndex;
+    document.getElementById('tipMessage').innerHTML = buildCheckinMessage(phase, entry, dayNum);
 
     const chipsBox = document.getElementById('tipQuickChips');
     chipsBox.innerHTML = '';
@@ -2315,12 +2363,19 @@
 
   function renderAll(){
     const c = computeCycle();
-    renderWheel(c);
-    renderCalendar(c);
-    renderInsights(c);
-    renderSmartInsight(c);
-    renderStreak();
-    renderTip(c);
+    // Each render step is independent — a problem in one (e.g. a data shape
+    // surprise in Insights) shouldn't take the Today check-in card down with it.
+    const steps = [
+      () => renderWheel(c),
+      () => renderCalendar(c),
+      () => renderInsights(c),
+      () => renderSmartInsight(c),
+      () => renderStreak(),
+      () => renderTip(c)
+    ];
+    steps.forEach(step => {
+      try{ step(); }catch(err){ console.error('renderAll step failed:', err); }
+    });
   }
 
   document.getElementById('tipMoreBtn').addEventListener('click', () => openDayEditor(todayStr()));
