@@ -3088,7 +3088,7 @@
     setBtnLoading(authSubmitBtn, true, authMode === 'signup' ? 'Creating…' : 'Signing in…');
     try{
       const { data, error } = authMode === 'signup'
-        ? await supabase.auth.signUp({ email, password })
+        ? await supabase.auth.signUp({ email, password, options: { data: { app: 'bloom' } } })
         : await supabase.auth.signInWithPassword({ email, password });
       if(error) throw error;
       if(authMode === 'signup' && !data.session){
